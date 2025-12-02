@@ -1,64 +1,53 @@
-const imageSources = [
-  'https://images.unsplash.com/photo-1692155628903-3f93fa955da7?q=80&w=868&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-  'https://images.unsplash.com/photo-1642802031916-875a87c95734?q=80&w=880&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-  'https://images.unsplash.com/photo-1705820922514-f78e764c3122?q=80&w=880&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-  'https://images.unsplash.com/vector-1742739301927-959ef5f72016?q=80&w=880&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-  'https://images.unsplash.com/vector-1742739301924-2ae33456b256?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MjB8fGJpcnRoZGF5fGVufDB8MnwwfHx8MA%3D%3D',
-  'https://images.unsplash.com/photo-1640506054499-2b040ca19023?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NHx8YmlydGhkYXl8ZW58MHwyfDB8fHwy',
-  'https://images.unsplash.com/photo-1464349095431-e9a21285b5f3?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8N3x8YmlydGhkYXl8ZW58MHwyfDB8fHwy',
-  'https://images.unsplash.com/photo-1705820922514-f78e764c3122?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8OXx8YmlydGhkYXl8ZW58MHwyfDB8fHwy',
-  'https://images.unsplash.com/photo-1660431875015-f64c8384aaa0?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NDF8fGJpcnRoZGF5fGVufDB8MnwwfHx8Mg%3D%3D',
-  'https://images.unsplash.com/photo-1657497850588-95c90b876cdb?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MzN8fGJpcnRoZGF5fGVufDB8MnwwfHx8Mg%3D%3D'
+const giftBtn = document.getElementById('giftbtn');
+const hero = document.querySelector('.hero');
+
+// Array of 30 image paths - replace with your actual image filenames
+const images = [
+  '/images/image1.webp','/images/image2.webp','/images/image3.webp','/images/image4.webp','/images/image5.jpg',    
+  '/images/image6.webp','/images/image7.webp','/images/image8.webp','/images/image9.webp','/images/image10.webp',
+  '/images/image11.jpg','/images/image12.webp','/images/image13.webp','/images/image14.webp','/images/image15.webp',
 ];
 
-const container = document.getElementById("floatingImagesContainer");
-const IMG_WIDTH = 150;
-
-function getRandomX(existingXs) {
-  const screenWidth = window.innerWidth;
-  const minSpacing = IMG_WIDTH * 1.2; // prevents overlapping
-
-  for (let tries = 0; tries < 20; tries++) {
-    const x = Math.random() * (screenWidth - IMG_WIDTH);
-
-    // check if too close to existing positions
-    let ok = true;
-    for (const ex of existingXs) {
-      if (Math.abs(x - ex) < minSpacing) {
-        ok = false;
-        break;
-      }
-    }
-
-    if (ok) return x;
+giftBtn.addEventListener('click', () => {
+  // Spawn all 30 images
+  for (let i = 0; i < 30; i++) {
+    setTimeout(() => {
+      createFloatingImage(i);
+    }, i * 100);
   }
+});
 
-  return Math.random() * (screenWidth - IMG_WIDTH); // fallback
+function createFloatingImage(index) {
+  const img = document.createElement('img');
+  
+  img.src = images[index];
+  img.classList.add('floating-photo');
+  
+  // Start from center bottom
+  img.style.left = '50%';
+  img.style.bottom = '10%';
+  
+  // Random spread direction (360 degrees)
+  const angle = Math.random() * 360;
+  const distance = Math.random() * 600 + 400;
+  const driftX = Math.cos(angle * Math.PI / 180) * distance;
+  const driftY = Math.sin(angle * Math.PI / 180) * distance;
+  
+  img.style.setProperty('--drift-x', driftX + 'px');
+  img.style.setProperty('--drift-y', driftY + 'px');
+  
+  // Random rotation
+  const rotation = Math.random() * 720 - 360;
+  img.style.setProperty('--rotation', rotation + 'deg');
+  
+  // Random duration
+  const duration = Math.random() * 3 + 4;
+  img.style.animationDuration = duration + 's';
+  
+  hero.appendChild(img);
+  
+  // Remove after animation
+  setTimeout(() => {
+    img.remove();
+  }, duration * 1000);
 }
-
-function spawnFour() {
-  const positions = [];
-
-  for (let i = 0; i < 4; i++) {
-    const img = document.createElement("img");
-    img.src = imageSources[Math.floor(Math.random() * imageSources.length)];
-
-    const x = getRandomX(positions);
-    positions.push(x);
-
-    img.style.left = x + "px";
-
-    // random float duration for variety
-    img.style.animationDuration = (8 + Math.random() * 4) + "s";
-
-    container.appendChild(img);
-
-    img.addEventListener("animationend", () => img.remove());
-  }
-}
-
-spawnFour();
-
-// spawn a new batch every 2–3 seconds
-setInterval(spawnFour, 2500);
-

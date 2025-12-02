@@ -16,7 +16,7 @@ got it?
   57%,
   100% {
     /* neon aqua/green glow like "Friend" */
-      text-shadow: 0 0 14px rgba(66, 255, 198, 0.7);
+      text-shadow: 0 0 16px rgba(66, 255, 198, 0.701);
       
   }
   20%,
@@ -83,6 +83,7 @@ got it?
   overflow: hidden;
   /* new dark blue → teal background like the banner */
   background: radial-gradient(circle at top, #2af5ff 0%, #081b33 35%, #231942 100%);
+  position: relative;
 }
 
 /* (comments kept same) */
@@ -157,35 +158,26 @@ got it?
   animation: flickerHappy 5s ease-in-out infinite;
 }
 
- .birthday {
+.birthday {
   font-size: 95px;
   margin: 0;
   display: flex;
   align-items: center;
 
-  /* Softer gradient */
-background: linear-gradient(90deg, #2ee6ff, #c2ff82);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
+  /* Gradient text */
+  background: linear-gradient(90deg, #2ee6ff, #c2ff82);
+  background-clip: text;
+  color: transparent;
+  /* FIX: reduce blur + stronger edges */
+  text-shadow:
+    0 0 2px rgb(66, 255, 198),
+    0 0 5px rgb(66, 255, 198);
+
   animation: flickerBirthday 3s ease-in infinite;
-      text-shadow: 0 0 14px rgba(66, 255, 198, 0.7);
-
 }
 
 
 
-.birthday span {
-  display: flex;
-  padding: 0px;
-}
-.birthday .up {
-  transform: translateY(5px);
-  animation-delay: 1.5s;
-}
-.birthday .down {
-  transform: translateY(-5px);
-  animation-delay: 3s;
-}
 .gift-button {
   position: absolute;
   bottom: -40%;
@@ -210,24 +202,39 @@ background: linear-gradient(90deg, #2ee6ff, #c2ff82);
   transform: translateX(-50%) scale(0.95);
 }
 
-#floatingImagesContainer {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
+/* make sure the main area can contain absolutely positioned photos */
+.hero {
+  position: relative;
   overflow: hidden;
 }
 
-#floatingImagesContainer img {
+@keyframes floatUp {
+  0% {
+    transform: translate(-50%, 0) rotate(0deg) scale(0.3);
+    opacity: 0;
+  }
+  15% {
+    opacity: 1;
+    transform: translate(-50%, -100px) rotate(20deg) scale(1);
+  }
+  100% {
+    transform: translate(calc(-50% + var(--drift-x)), calc(-100vh + var(--drift-y))) rotate(var(--rotation)) scale(0.5);
+    opacity: 0;
+  }
+}
+
+/* Floating photos styling */
+.floating-photo {
   position: absolute;
   width: 150px;
-  bottom: -180px;
-  opacity: 0.9;
-  animation-name: floatUp;
-  animation-timing-function: cubic-bezier(0.25, 0.1, 0.25, 1); /* soft ease */
-  animation-fill-mode: forwards;
-  rotate: 15deg;
-  border-radius: 20%;
+  height: 150px;
+  object-fit: cover;
+  border-radius: 12px;
+  border: 3px solid rgba(255, 255, 255, 0.8);
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.3),
+    0 0 20px rgba(66, 255, 198, 0.4);
+  animation: floatUp 6s ease-out forwards;
+  pointer-events: none;
+  z-index: 5;
 }
