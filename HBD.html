@@ -1,0 +1,625 @@
+ <!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Happy Birthday Ayesha 🎉</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lovers+Quarrel&family=Poppins:wght@300;500;700&family=Dancing+Script:wght@400;600&display=swap" rel="stylesheet">
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{
+  min-height:100vh;
+  font-family:'Poppins',sans-serif;
+  background:linear-gradient(135deg,#ff9a9e,#fad0c4,#fad0c4);
+  overflow-x:hidden;
+  transition:1s;
+}
+body.night{
+  background:radial-gradient(circle at top,#0b1a33,#000);
+  color:#fff;
+}
+
+/* CONFETTI */
+.confetti{position:fixed;inset:0;pointer-events:none;z-index:0}
+.confetti span{
+  position:absolute;width:10px;height:14px;
+  background:hsl(var(--h),90%,60%);
+  top:-20px;animation:fall linear infinite;
+  box-shadow:0 0 10px hsl(var(--h),90%,60%);
+}
+@keyframes fall{to{transform:translateY(110vh) rotate(360deg)}}
+
+/* TOGGLE */
+.toggle{
+  position:fixed;top:20px;right:20px;
+  padding:10px 22px;border-radius:30px;border:none;
+  background:#111;color:#fff;
+  cursor:pointer;z-index:2000;
+  font-size:0.9rem;
+}
+
+/* APP */
+.app{
+  max-width:900px;margin:auto;
+  padding:50px 20px;
+  text-align:center;
+  position:relative;z-index:1;
+}
+.step{display:none;animation:fadeUp 1s ease}
+.step.active{display:block}
+
+/* CARD */
+.card{
+  background:linear-gradient(135deg,#ffffff,#fef6ff);
+  padding:45px 25px;border-radius:30px;
+  box-shadow:0 30px 60px rgba(0,0,0,.2);
+  animation:cardFloat 3s ease-in-out infinite;
+}
+@keyframes cardFloat{
+  0%,100%{transform:translateY(0px)}
+  50%{transform:translateY(-10px)}
+}
+body.night .card{
+  background:linear-gradient(135deg,#1a2a4f,#0b1a33);
+}
+body.night .wish{
+  background:linear-gradient(135deg,#2d4a6f,#1a3050);
+  color:#fff;
+}
+body.night .book{
+  background:linear-gradient(135deg,#2d4a6f,#1a3050);
+}
+body.night .page{
+  color:#fff;
+}
+
+/* HEADINGS */
+h1,h2{
+  background:linear-gradient(90deg,#ff4ecd,#ffb347,#4facfe);
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+  animation:gradientShift 3s ease infinite;
+  background-size:200% 200%;
+  font-size:clamp(1.5rem, 5vw, 2.5rem);
+}
+h1{font-size:clamp(1.8rem, 6vw, 3rem)}
+@keyframes gradientShift{
+  0%{background-position:0% 50%}
+  50%{background-position:100% 50%}
+  100%{background-position:0% 50%}
+}
+
+/* PANDA */
+.panda{
+  font-size:clamp(80px, 20vw, 120px);
+  animation:bounce 2.5s infinite;
+  filter:drop-shadow(0 0 20px rgba(255,184,108,0.6));
+}
+@keyframes bounce{50%{transform:translateY(-25px) rotate(5deg)}}
+
+/* BUTTON */
+button{
+  margin-top:25px;
+  padding:14px 42px;
+  border:none;border-radius:40px;
+  background:linear-gradient(135deg,#ff4ecd,#4facfe);
+  color:#fff;font-size:clamp(0.9rem, 3vw, 1.1rem);
+  cursor:pointer;transition:.3s;
+  box-shadow:0 8px 20px rgba(255,78,205,0.4);
+  animation:pulse 2s infinite;
+}
+button:hover{transform:scale(1.1);box-shadow:0 12px 30px rgba(255,78,205,0.6)}
+@keyframes pulse{
+  0%,100%{box-shadow:0 8px 20px rgba(255,78,205,0.4)}
+  50%{box-shadow:0 8px 30px rgba(79,172,254,0.6)}
+}
+
+/* ===== PUZZLE - RESPONSIVE & FIXED DRAGGING ===== */
+.puzzle-wrap{
+  display:flex;
+  gap:20px;
+  justify-content:center;
+  align-items:flex-start;
+  margin-top:25px;
+  flex-wrap:wrap;
+}
+.puzzle-board{
+  width:min(300px, 90vw);
+  height:min(300px, 90vw);
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  position:relative;
+  border-radius:18px;
+  overflow:hidden;
+}
+.puzzle-board::before{
+  content:"";
+  position:absolute;inset:0;
+  background-image:url("sad_panda_painting-wallpaper-1920x1080.jpg");
+  background-size:100% 100%;
+  filter:blur(2px);opacity:.25;
+}
+.slot{
+  border:1px dashed rgba(255,255,255,.6);
+  position:relative;z-index:1;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+.slot.highlight{
+  background:rgba(79,172,254,0.3);
+  border:2px solid #4facfe;
+}
+.pieces{
+  display:grid;
+  grid-template-columns:repeat(3, min(100px, 28vw));
+  gap:12px;
+}
+.piece{
+  width:min(100px, 28vw);
+  height:min(100px, 28vw);
+  background-image:url("sad_panda_painting-wallpaper-1920x1080.jpg");
+  background-size:300% 300%;
+  border-radius:14px;
+  cursor:grab;
+  touch-action:none;
+  user-select:none;
+  transition:transform 0.2s;
+}
+.piece:active{
+  cursor:grabbing;
+  transform:scale(1.05);
+}
+.piece.dragging{
+  position:fixed;
+  z-index:9999;
+  pointer-events:none;
+  opacity:0.8;
+  transform:scale(1.1);
+}
+.piece.locked{
+  box-shadow:0 0 18px rgba(255,120,200,.6);
+  cursor:default;
+  width:100%;
+  height:100%;
+  border-radius:0;
+}
+
+#puzzleMsg{
+  margin-top:15px;
+  font-size:1.2rem;
+  font-weight:bold;
+  color:#ff4ecd;
+}
+
+/* ===== MATCH - RESPONSIVE ===== */
+.match{
+  display:grid;
+  grid-template-columns:repeat(4, min(70px, 18vw));
+  gap:clamp(8px, 2vw, 12px);
+  justify-content:center;
+  margin-top:25px;
+}
+.cardm{
+  width:min(70px, 18vw);
+  height:min(70px, 18vw);
+  background:#ffd1dc;
+  border-radius:12px;
+  font-size:clamp(1.2rem, 4vw, 1.8rem);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  cursor:pointer;
+  transition:transform 0.2s;
+}
+.cardm:hover{
+  transform:scale(1.05);
+}
+
+/* ===== BOOK & WISHES - RESPONSIVE ===== */
+.overlay{
+  position:fixed;inset:0;
+  background:rgba(0,0,0,.7);
+  display:none;
+  align-items:center;
+  justify-content:center;
+  z-index:3000;
+  padding:20px;
+}
+.overlay.show{display:flex}
+.book{
+  width:min(800px, 95vw);
+  height:min(500px, 80vh);
+  background:linear-gradient(135deg,#fff1eb,#ace0f9);
+  border-radius:25px;
+  box-shadow:0 40px 80px rgba(0,0,0,.4);
+  overflow:hidden;
+  position:relative;
+}
+.pages{
+  display:flex;
+  height:100%;
+  transition:transform .8s cubic-bezier(.68,-0.6,.32,1.6);
+}
+.page{
+  min-width:100%;
+  padding:clamp(20px, 5vw, 35px);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  font-family:'Dancing Script',cursive;
+  font-size:clamp(1.5rem, 5vw, 2.8rem);
+  line-height:1.6;
+}
+.nav{
+  position:absolute;
+  bottom:15px;
+  left:0;right:0;
+  display:flex;
+  justify-content:space-between;
+  padding:0 25px;
+}
+.arrow{
+  width:clamp(40px, 10vw, 50px);
+  height:clamp(40px, 10vw, 50px);
+  border-radius:50%;
+  background:linear-gradient(135deg,#ff4ecd,#4facfe);
+  color:#fff;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:clamp(1.2rem, 3vw, 1.6rem);
+  cursor:pointer;
+  transition:transform 0.2s;
+}
+.arrow:hover{
+  transform:scale(1.1);
+}
+.wish{
+  margin:15px auto;
+  padding:clamp(12px, 3vw, 18px);
+  max-width:620px;
+  background:linear-gradient(135deg,#ffecd2,#fcb69f);
+  border-radius:25px;
+  animation:wishFloat 3s ease-in-out infinite;
+  font-size:clamp(0.9rem, 2.5vw, 1rem);
+}
+@keyframes wishFloat{50%{transform:translateY(-10px)}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(40px)}to{opacity:1}}
+
+/* RESPONSIVE TEXT */
+p{
+  font-size:clamp(0.9rem, 2.5vw, 1.1rem);
+  line-height:1.6;
+}
+
+/* Mobile adjustments */
+@media (max-width: 768px) {
+  .app{
+    padding:30px 15px;
+  }
+  .card{
+    padding:30px 20px;
+  }
+  .puzzle-wrap{
+    flex-direction:column;
+    align-items:center;
+  }
+  .match{
+    grid-template-columns:repeat(4, 70px);
+  }
+}
+
+@media (max-width: 480px) {
+  .toggle{
+    top:10px;
+    right:10px;
+    padding:8px 18px;
+    font-size:0.8rem;
+  }
+  .match{
+    grid-template-columns:repeat(4, 60px);
+  }
+  .cardm{
+    width:60px;
+    height:60px;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<div class="confetti" id="confetti"></div>
+<button class="toggle" onclick="toggleMode()">🌙</button>
+
+<div class="app">
+
+<!-- INTRO -->
+<div class="step active">
+  <div class="card">
+    <h1>🎉 Happy Birthday Ayesha 🎉</h1>
+    <p>Surprisee for my PANDA ✨</p>
+    <button onclick="nextStep()">Let's Go 🎁</button>
+  </div>
+</div>
+
+<!-- PANDA -->
+<div class="step">
+  <div class="panda">🐼</div>
+  <div class="card">
+    <h2 style="margin-bottom: 15px;">My Panda 🐼💙</h2>
+    <p>You're not just a friend, you're family 💖</p>
+    <button onclick="nextStep()">Next ➜</button>
+  </div>
+</div>
+
+<!-- PUZZLE -->
+<div class="step">
+  <div class="card">
+    <h2>🧩 Complete the Picture</h2>
+    <div class="puzzle-wrap">
+      <div class="pieces" id="pieces"></div>
+      <div class="puzzle-board" id="board"></div>
+    </div>
+    <p id="puzzleMsg"></p>
+  </div>
+</div>
+
+<!-- MATCH -->
+<div class="step">
+  <div class="card">
+    <h2>💞 Matching Game</h2>
+    <div class="match" id="match"></div>
+  </div>
+</div>
+
+<!-- BOOK STEP -->
+<div class="step">
+  <div class="card">
+    <h2>📖 A Special Book</h2>
+    <p style="margin-top: 15px;">This is a small present for you</p>
+    <button onclick="openBook()">Open Book 📖</button>
+  </div>
+</div>
+
+<!-- WISHES -->
+<div class="step">
+  <div class="card">
+    <h2>💌 Wishes for You</h2>
+    <div class="wish">Happy Birthday! May your day be as amazing as you are</div>
+    <div class="wish">May happiness always find you ✨</div>
+    <div class="wish">May all your dreams come true 💫</div>
+    <div class="wish">May your life be full of colors 🌈</div>
+    <div class="wish">May your day be filled with joy and laughter 🎈</div>
+    <div class="wish">Wishing you endless love and success in the year ahead 🌟</div>
+    <div class="wish">Happy Birthday once again! 🎉</div>
+    <button onclick="nextStep()">Finish 🎊</button>
+  </div>
+</div>
+
+</div>
+
+<!-- BOOK OVERLAY -->
+<div class="overlay" id="bookOverlay">
+  <div style="width:100%;max-width:850px">
+    <div class="book">
+      <div class="pages" id="pages">
+        <div class="page"><p>Dear Ayesha 🌸<br><br>Happy Birthday 🎉🤍</p></div>
+        <div class="page"><p>You deserve happiness, peace, love, and success.</p></div>
+        <div class="page"><p>Jaruri nhe bat hu ya nhe,<br>magr dost hamesha dost huta ha 🤍</p></div>
+        <div class="page"><p>Meri Pandaaa hein ap tuu 🐼🐼<br>You are one of those friends who make me smile.</p></div>
+        <div class="page"><p>Zindagi mein bohat log aaye, bohat gaye,<br>Magar tum woh ho jo dil mein bas gaye.</p></div>
+        <div class="page"><p>Har mushkil mein tumhari muskurahat yaad aati hai ✨</p></div>
+        <div class="page"><p>Dua hai ke tumhari zindagi khushiyon se bhari rahe 🌸</p></div>
+        <div class="page"><p>Allah tumhein hamesha khush rakhe,<br>mehfooz rakhe, aur kamyab kare. Ameen 🤲</p></div>
+        <div class="page"><p>Happy Birthday once again 🤍<br>Always stay the same.</p></div>
+      </div>
+      <div class="nav">
+        <div class="arrow" onclick="prevPage()">⬅</div>
+        <div class="arrow" onclick="nextPage()">➡</div>
+      </div>
+    </div>
+    <div style="text-align:center;margin-top:15px">
+      <button onclick="closeBook()">Close Book 📕</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* CONFETTI */
+const confetti=document.getElementById("confetti");
+for(let i=0;i<120;i++){
+  const s=document.createElement("span");
+  s.style.left=Math.random()*100+"vw";
+  s.style.animationDuration=3+Math.random()*5+"s";
+  s.style.setProperty("--h",Math.random()*360);
+  confetti.appendChild(s);
+}
+
+/* STEPS */
+let step=0;
+const steps=document.querySelectorAll(".step");
+function nextStep(){
+  steps[step].classList.remove("active");
+  step++;
+  if(step<steps.length)steps[step].classList.add("active");
+}
+function toggleMode(){document.body.classList.toggle("night")}
+
+/* ===== IMPROVED DRAG & DROP PUZZLE ===== */
+const piecesBox=document.getElementById("pieces");
+const board=document.getElementById("board");
+const puzzleMsg=document.getElementById("puzzleMsg");
+let activePiece=null;
+let placed=0;
+const slots=[];
+let offsetX=0, offsetY=0;
+
+// Create slots
+for(let i=0;i<9;i++){
+  const s=document.createElement("div");
+  s.className="slot";
+  s.dataset.index=i;
+  board.appendChild(s);
+  slots.push(s);
+}
+
+// Create pieces
+const indices=[...Array(9).keys()].sort(()=>Math.random()-.5);
+indices.forEach(i=>{
+  const p=document.createElement("div");
+  p.className="piece";
+  p.dataset.index=i;
+  const col=i%3;
+  const row=Math.floor(i/3);
+  p.style.backgroundPosition=`-${col*100}px -${row*100}px`;
+
+  // Mouse events
+  p.addEventListener("mousedown",startDrag);
+  
+  // Touch events
+  p.addEventListener("touchstart",startDrag);
+
+  piecesBox.appendChild(p);
+});
+
+function startDrag(e){
+  const piece=e.target;
+  if(piece.classList.contains("locked")) return;
+  
+  e.preventDefault();
+  activePiece=piece;
+  
+  const rect=piece.getBoundingClientRect();
+  const clientX=e.type.includes("touch")?e.touches[0].clientX:e.clientX;
+  const clientY=e.type.includes("touch")?e.touches[0].clientY:e.clientY;
+  
+  offsetX=clientX-rect.left;
+  offsetY=clientY-rect.top;
+  
+  piece.classList.add("dragging");
+  
+  // Position the piece at cursor/touch
+  movePiece(e);
+}
+
+function movePiece(e){
+  if(!activePiece) return;
+  
+  const clientX=e.type.includes("touch")?e.touches[0].clientX:e.clientX;
+  const clientY=e.type.includes("touch")?e.touches[0].clientY:e.clientY;
+  
+  activePiece.style.left=(clientX-offsetX)+"px";
+  activePiece.style.top=(clientY-offsetY)+"px";
+  
+  // Highlight matching slot
+  slots.forEach(s=>s.classList.remove("highlight"));
+  const matchingSlot=findMatchingSlot(clientX, clientY);
+  if(matchingSlot && matchingSlot.dataset.index===activePiece.dataset.index){
+    matchingSlot.classList.add("highlight");
+  }
+}
+
+function endDrag(e){
+  if(!activePiece) return;
+  
+  const piece=activePiece;
+  piece.classList.remove("dragging");
+  
+  const clientX=e.type.includes("touch")?e.changedTouches[0].clientX:e.clientX;
+  const clientY=e.type.includes("touch")?e.changedTouches[0].clientY:e.clientY;
+  
+  const targetSlot=findMatchingSlot(clientX, clientY);
+  
+  // Reset position
+  piece.style.left="";
+  piece.style.top="";
+  
+  // Remove all highlights
+  slots.forEach(s=>s.classList.remove("highlight"));
+  
+  // Check if piece matches the slot
+  if(targetSlot && targetSlot.dataset.index===piece.dataset.index){
+    targetSlot.appendChild(piece);
+    piece.classList.add("locked");
+    placed++;
+    
+    if(placed===9){
+      puzzleMsg.textContent="Perfect 🐼💙";
+      setTimeout(nextStep,1500);
+    }
+  }
+  
+  activePiece=null;
+}
+
+function findMatchingSlot(x, y){
+  let bestSlot=null;
+  let minDist=Infinity;
+  
+  slots.forEach(slot=>{
+    if(slot.children.length>0) return; // Slot already filled
+    
+    const rect=slot.getBoundingClientRect();
+    const centerX=rect.left+rect.width/2;
+    const centerY=rect.top+rect.height/2;
+    const dist=Math.hypot(x-centerX, y-centerY);
+    
+    if(dist<minDist && dist<100){
+      minDist=dist;
+      bestSlot=slot;
+    }
+  });
+  
+  return bestSlot;
+}
+
+// Global event listeners
+document.addEventListener("mousemove",movePiece);
+document.addEventListener("mouseup",endDrag);
+document.addEventListener("touchmove",movePiece,{passive:false});
+document.addEventListener("touchend",endDrag);
+
+/* MATCH GAME */
+const match=document.getElementById("match");
+const emojis=["🐼","🐼","💖","💖","✨","✨","🎀","🎀","🌙","🌙","⭐","⭐","🎈","🎈","🍰","🍰"];
+let flipped=[],matched=0;
+emojis.sort(()=>Math.random()-.5).forEach(e=>{
+  const c=document.createElement("div");
+  c.className="cardm";
+  c.textContent="❓";
+  c.onclick=()=>{
+    if(flipped.length<2&&c.textContent==="❓"){
+      c.textContent=e;
+      flipped.push({c,e});
+      if(flipped.length===2){
+        if(flipped[0].e===flipped[1].e){
+          matched+=2;flipped=[];
+          if(matched===emojis.length)setTimeout(nextStep,600);
+        }else{
+          setTimeout(()=>{flipped.forEach(x=>x.c.textContent="❓");flipped=[]},600);
+        }
+      }
+    }
+  };
+  match.appendChild(c);
+});
+
+/* BOOK */
+let index=0;
+const pages=document.getElementById("pages");
+function updatePage(){pages.style.transform=`translateX(-${index*100}%)`}
+function nextPage(){if(index>=pages.children.length-1){closeBook();return;}index++;updatePage()}
+function prevPage(){if(index>0){index--;updatePage()}}
+function openBook(){index=0;updatePage();document.getElementById("bookOverlay").classList.add("show")}
+function closeBook(){document.getElementById("bookOverlay").classList.remove("show");nextStep()}
+</script>
+
+</body>
+</html>
