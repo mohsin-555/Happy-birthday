@@ -67,15 +67,15 @@ input:focus{border-color:var(--amber);}
 <body>
 <div id="app"></div>
 <script>
-const RI = {
-  Mafia:    {e:'🔪',c:'#c0392b',bg:'rgba(139,26,26,.3)'},
-  Doctor:   {e:'💊',c:'#27ae60',bg:'rgba(26,74,46,.3)'},
+const RI={
+  Mafia:{e:'🔪',c:'#c0392b',bg:'rgba(139,26,26,.3)'},
+  Doctor:{e:'💊',c:'#27ae60',bg:'rgba(26,74,46,.3)'},
   Detective:{e:'🔍',c:'#2980b9',bg:'rgba(26,42,74,.3)'},
-  Cupid:    {e:'💘',c:'#c0392b',bg:'rgba(120,26,60,.3)'},
-  Jester:   {e:'🃏',c:'#d35400',bg:'rgba(120,60,0,.3)'},
-  Villager: {e:'🏘️',c:'#7f8c8d',bg:'rgba(50,50,60,.3)'},
+  Cupid:{e:'💘',c:'#c0392b',bg:'rgba(120,26,60,.3)'},
+  Jester:{e:'🃏',c:'#d35400',bg:'rgba(120,60,0,.3)'},
+  Villager:{e:'🏘️',c:'#7f8c8d',bg:'rgba(50,50,60,.3)'},
 };
-const RDESC = {
+const RDESC={
   Mafia:'Each night, eliminate a villager. Win when Mafia equal or outnumber the town.',
   Doctor:'Each night, protect one player from death. You may protect yourself.',
   Detective:'Each night, investigate someone to learn if they are Mafia.',
@@ -84,37 +84,39 @@ const RDESC = {
   Villager:'Find and vote out the Mafia before they take over the village.',
 };
 
-let S = {
-  screen:'welcome', playerName:'', isHost:false, roomCode:'',
-  peer:null, conn:null, conns:{},
-  lobbyPlayers:[], settings:{mafia:1,doctor:1,detective:1,cupid:0,jester:0},
-  myRole:null, myId:null,
-  phase:null, players:[], nightNumber:1, narration:'', loading:false,
-  nightDead:[], votedOut:null, winner:null,
-  nightActionType:null, nightActionTargets:[], nightActionResult:null,
-  cupidPick:[], _detTarget:null,
-  _nightQueue:[], nightActions:{}, lovers:[], voteData:{},
-  _rolesReady:0, error:'',
+// Broker configs tried in order on timeout/error
+const PEER_CONFIGS=[
+  {host:'0.peerjs.com',port:443,path:'/',secure:true},
+  null, // PeerJS default init (same broker, different path)
+];
+
+let S={
+  screen:'welcome',playerName:'',isHost:false,roomCode:'',
+  peer:null,conn:null,conns:{},
+  lobbyPlayers:[],settings:{mafia:1,doctor:1,detective:1,cupid:0,jester:0},
+  myRole:null,myId:null,
+  phase:null,players:[],nightNumber:1,narration:'',loading:false,
+  nightDead:[],votedOut:null,winner:null,
+  nightActionType:null,nightActionTargets:[],nightActionResult:null,
+  cupidPick:[],_detTarget:null,_detName:'',
+  _nightQ:[],nightActions:{},lovers:[],voteData:{},
+  _rolesReady:0,_totalPlayers:0,
+  error:'',
 };
 
 // ─── RENDER ──────────────────────────────────────────────────────────────────
-function render() {
-  const app = document.getElementById('app');
-  app.innerHTML = screens();
-  bind();
-}
-
-function screens() {
-  if (S.screen==='welcome') return welcome();
-  if (S.screen==='name')    return nameScreen();
-  if (S.screen==='mode')    return mode();
-  if (S.screen==='join')    return joinInput();
-  if (S.screen==='lobby')   return lobby();
-  if (S.screen==='game')    return gameScreen();
+function render(){document.getElementById('app').innerHTML=screens();bind();}
+function screens(){
+  if(S.screen==='welcome')return welcome();
+  if(S.screen==='name')return nameScreen();
+  if(S.screen==='mode')return mode();
+  if(S.screen==='join')return joinInput();
+  if(S.screen==='lobby')return lobby();
+  if(S.screen==='game')return gameScreen();
   return '';
 }
 
-function welcome() {
+function welcome(){
   return `<div class="page fade">
     <div style="text-align:center;padding:0 24px;max-width:420px;">
       <div style="font-size:56px;margin-bottom:20px;" class="candle">🕯️</div>
@@ -129,8 +131,8 @@ function welcome() {
   </div>`;
 }
 
-function nameScreen() {
-  const fromLink = !!new URLSearchParams(window.location.search).get('room');
+function nameScreen(){
+  const fromLink=!!new URLSearchParams(window.location.search).get('room');
   return `<div class="page fade">
     <div class="card" style="max-width:360px;">
       <div style="text-align:center;margin-bottom:22px;">
@@ -146,7 +148,7 @@ function nameScreen() {
   </div>`;
 }
 
-function mode() {
+function mode(){
   return `<div class="page fade">
     <div class="card" style="max-width:380px;">
       <div style="text-align:center;margin-bottom:26px;">
@@ -156,15 +158,22 @@ function mode() {
           Welcome, <strong style="color:var(--gold)">${esc(S.playerName)}</strong>. What brings you here?
         </p>
       </div>
-      <button class="btn" id="goBtnCreate">🏠 CREATE A ROOM</button>
-      <div class="divider"></div>
-      <button class="btn ghost" id="goBtnJoin">🚪 JOIN A ROOM</button>
+      ${S.error?`<div class="alert err">${S.error}</div>`:''}
+      ${S.loading
+        ?`<div style="text-align:center;padding:20px 0;">
+            <span class="spin"></span>
+            <p style="color:var(--muted);margin-top:14px;font-style:italic;">Preparing the village…</p>
+            <p style="color:var(--muted);font-size:13px;margin-top:6px;">Connecting to game server…</p>
+          </div>`
+        :`<button class="btn" id="goBtnCreate">🏠 CREATE A ROOM</button>
+          <div class="divider"></div>
+          <button class="btn ghost" id="goBtnJoin">🚪 JOIN A ROOM</button>`
+      }
     </div>
   </div>`;
 }
 
-function joinInput() {
-  const code = S.roomCode || '';
+function joinInput(){
   return `<div class="page fade">
     <div class="card" style="max-width:360px;">
       <div style="text-align:center;margin-bottom:22px;">
@@ -173,7 +182,7 @@ function joinInput() {
         <p class="sub" style="margin-bottom:0;font-size:15px;">Enter the room code from the host</p>
       </div>
       ${S.error?`<div class="alert err">${S.error}</div>`:''}
-      <input type="text" id="inp-code" placeholder="ROOM CODE" value="${code}"
+      <input type="text" id="inp-code" placeholder="ROOM CODE" value="${S.roomCode||''}"
         maxlength="6" autocomplete="off"
         style="text-align:center;font-size:26px;letter-spacing:8px;text-transform:uppercase;">
       ${S.loading
@@ -184,9 +193,9 @@ function joinInput() {
   </div>`;
 }
 
-function lobby() {
-  const players = S.lobbyPlayers;
-  const link = `${location.origin}${location.pathname}?room=${S.roomCode}`;
+function lobby(){
+  const players=S.lobbyPlayers;
+  const link=`${location.origin}${location.pathname}?room=${S.roomCode}`;
   return `<div class="page fade">
     <div class="card">
       <div style="text-align:center;margin-bottom:18px;">
@@ -196,17 +205,14 @@ function lobby() {
           ${S.isHost?'YOU ARE THE INNKEEPER':'WAITING FOR INNKEEPER TO START'}
         </p>
       </div>
-
       <div class="code-wrap">
         <div class="code-lbl">Room Code</div>
         <div class="code-val">${S.roomCode}</div>
       </div>
-
       <div class="link-row">
         <span>${link}</span>
         <button id="goBtnCopyLink">COPY</button>
       </div>
-
       <div class="divider"></div>
       <h3>👥 PLAYERS (${players.length})</h3>
       ${players.map(p=>`
@@ -215,9 +221,7 @@ function lobby() {
           <span style="flex:1;font-size:17px;">${esc(p.name)}</span>
           ${p.isHost?'<span style="color:var(--amber);font-size:13px;">👑 HOST</span>':''}
         </div>`).join('')}
-
       ${players.length<4?`<div class="alert info" style="margin-top:10px;">Need ${4-players.length} more player${4-players.length!==1?'s':''} to start.</div>`:''}
-
       ${S.isHost?`
         <div class="divider"></div>
         <h3>⚙️ ROLES</h3>
@@ -245,20 +249,20 @@ function lobby() {
   </div>`;
 }
 
-function gameScreen() {
-  if (S.phase==='roleReveal')   return roleReveal();
-  if (S.phase==='night')        return nightWait();
-  if (S.phase==='nightAction')  return nightAction();
-  if (S.phase==='day')          return dayPhase();
-  if (S.phase==='vote')         return votePh();
-  if (S.phase==='voteResult')   return voteResult();
-  if (S.phase==='over')         return gameOver();
+function gameScreen(){
+  if(S.phase==='roleReveal')return roleReveal();
+  if(S.phase==='night')return nightWait();
+  if(S.phase==='nightAction')return nightAction();
+  if(S.phase==='day')return dayPhase();
+  if(S.phase==='vote')return votePh();
+  if(S.phase==='voteResult')return voteResult();
+  if(S.phase==='over')return gameOver();
   return `<div class="page"><div class="card"><div style="text-align:center"><span class="spin"></span></div></div></div>`;
 }
 
-function roleReveal() {
-  const r = S.myRole; const ri = RI[r]||RI.Villager;
-  const mafPals = S.players.filter(p=>p.role==='Mafia'&&p.id!==S.myId);
+function roleReveal(){
+  const r=S.myRole;const ri=RI[r]||RI.Villager;
+  const mafPals=S.players.filter(p=>p.role==='Mafia'&&p.id!==S.myId);
   return `<div class="page fade">
     <div class="card" style="text-align:center;">
       <p style="font-size:11px;letter-spacing:3px;color:var(--muted);margin-bottom:14px;">YOUR SECRET ROLE</p>
@@ -278,7 +282,7 @@ function roleReveal() {
   </div>`;
 }
 
-function nightWait() {
+function nightWait(){
   return `<div class="page fade">
     <div class="card" style="text-align:center;">
       <div style="font-size:52px;margin-bottom:14px;" class="candle">🌑</div>
@@ -293,13 +297,13 @@ function nightWait() {
   </div>`;
 }
 
-function nightAction() {
-  const type=S.nightActionType, targets=S.nightActionTargets, res=S.nightActionResult;
-  const info = {
-    'mafia-kill':   {icon:'🔪', title:'MAFIA AWAKENS',       inst:'Choose your victim for tonight:'},
-    'doctor-protect':{icon:'💊',title:'DOCTOR AWAKENS',      inst:'Who will you protect tonight?'},
+function nightAction(){
+  const type=S.nightActionType,targets=S.nightActionTargets,res=S.nightActionResult;
+  const info={
+    'mafia-kill':{icon:'🔪',title:'MAFIA AWAKENS',inst:'Choose your victim for tonight:'},
+    'doctor-protect':{icon:'💊',title:'DOCTOR AWAKENS',inst:'Who will you protect tonight?'},
     'detective-investigate':{icon:'🔍',title:'DETECTIVE AWAKENS',inst:'Investigate someone:'},
-    'cupid-link':   {icon:'💘', title:'CUPID AWAKENS',       inst:`Link two souls as lovers (${S.cupidPick.length}/2):`},
+    'cupid-link':{icon:'💘',title:'CUPID AWAKENS',inst:`Link two souls as lovers (${S.cupidPick.length}/2):`},
   };
   const {icon,title,inst}=info[type]||{icon:'❓',title:'',inst:''};
   return `<div class="page fade">
@@ -329,7 +333,7 @@ function nightAction() {
   </div>`;
 }
 
-function dayPhase() {
+function dayPhase(){
   const alive=S.players.filter(p=>p.alive);
   return `<div class="page fade">
     <div class="card">
@@ -338,7 +342,6 @@ function dayPhase() {
         <h2>Day ${S.nightNumber}</h2>
         <p class="italic">${S.loading?'<span class="spin"></span>':S.narration?`❝${S.narration}❞`:''}</p>
       </div>
-
       ${S.nightDead.length>0?`
         <div style="background:rgba(139,26,26,.2);border:1px solid rgba(192,57,43,.3);border-radius:3px;padding:12px;margin-bottom:14px;">
           <p style="font-size:11px;letter-spacing:2px;color:#e74c3c;margin-bottom:8px;">⚰️ FOUND DEAD AT DAWN:</p>
@@ -349,7 +352,6 @@ function dayPhase() {
             </div>`).join('')}
         </div>`
       :`<div class="alert ok" style="margin-bottom:14px;">😌 No one died last night.</div>`}
-
       <div style="background:rgba(0,0,0,.22);border:1px solid rgba(212,138,28,.12);border-radius:3px;padding:12px;margin-bottom:18px;">
         <p style="font-size:11px;letter-spacing:2px;color:var(--muted);margin-bottom:8px;">STILL ALIVE</p>
         <div style="display:flex;flex-wrap:wrap;gap:6px;">
@@ -364,10 +366,10 @@ function dayPhase() {
   </div>`;
 }
 
-function votePh() {
-  const myVote = S.voteData[S.myId];
+function votePh(){
+  const myVote=S.voteData[S.myId];
   const alive=S.players.filter(p=>p.alive&&p.id!==S.myId);
-  if (myVote!==undefined) {
+  if(myVote!==undefined){
     const tv=S.players.find(p=>p.id===myVote);
     return `<div class="page fade"><div class="card" style="text-align:center;">
       <div style="font-size:46px;margin-bottom:12px;">🗳️</div>
@@ -390,18 +392,19 @@ function votePh() {
   </div></div>`;
 }
 
-function voteResult() {
+function voteResult(){
   const v=S.votedOut;
   return `<div class="page fade"><div class="card" style="text-align:center;">
     <div style="font-size:52px;margin-bottom:12px;">${v?'⚖️':'🤷'}</div>
     <h2>${v?`${esc(v.name)} Eliminated!`:'Tied Vote'}</h2>
     ${v?`<p style="color:${RI[v.role]?.c||'#888'};font-size:17px;margin:8px 0 16px;">${RI[v.role]?.e} They were a <strong>${v.role}</strong></p>`:''}
     <p class="italic" style="margin-bottom:20px;">${S.loading?'<span class="spin"></span>':S.narration?`❝${S.narration}❞`:''}</p>
-    ${!S.loading&&!S.winner?`<button class="btn" id="goBtnNextNight">🌑 BEGIN NIGHT ${S.nightNumber+1}</button>`:''}
+    ${!S.loading&&!S.winner&&S.isHost?`<button class="btn" id="goBtnNextNight">🌑 BEGIN NIGHT ${S.nightNumber+1}</button>`:''}
+    ${!S.loading&&!S.winner&&!S.isHost?`<p style="color:var(--muted);font-style:italic;margin-top:8px;">Waiting for the innkeeper…</p>`:''}
   </div></div>`;
 }
 
-function gameOver() {
+function gameOver(){
   const wc={Town:'#27ae60',Mafia:'#c0392b',Jester:'#d35400'};
   const we={Town:'🏘️',Mafia:'🔪',Jester:'🃏'};
   return `<div class="page fade">
@@ -425,7 +428,7 @@ function gameOver() {
 }
 
 // ─── BIND ─────────────────────────────────────────────────────────────────────
-function bind() {
+function bind(){
   const on=(id,fn)=>{const el=document.getElementById(id);if(el)el.addEventListener('click',fn);};
   on('goBtnStart',()=>{S.screen='name';S.error='';render();});
   on('goBtnBackWelcome',()=>{S.screen='welcome';render();});
@@ -438,7 +441,7 @@ function bind() {
     else S.screen='mode';
     render();
   });
-  on('goBtnBackMode',()=>{S.screen='mode';S.error='';render();});
+  on('goBtnBackMode',()=>{S.screen='mode';S.error='';S.loading=false;render();});
   on('goBtnCreate',createRoom);
   on('goBtnJoin',()=>{S.screen='join';S.error='';render();});
   on('goBtnJoinConnect',doJoin);
@@ -447,37 +450,25 @@ function bind() {
     navigator.clipboard.writeText(link).then(()=>{
       const b=document.getElementById('goBtnCopyLink');
       if(b){b.textContent='✓ COPIED';setTimeout(()=>{const bb=document.getElementById('goBtnCopyLink');if(bb)bb.textContent='COPY';},2000);}
-    }).catch(()=>{
-      prompt('Copy this link:',link);
-    });
+    }).catch(()=>{prompt('Copy this link:',link);});
   });
   on('goBtnHostStart',hostStartGame);
   on('goBtnRoleReady',()=>{
     if(S.isHost){
-      S._rolesReady=(S._rolesReady||0)+1;
+      S._rolesReady++;
       S.phase='night';S.loading=true;render();
       checkAllRolesReady();
-    } else {
+    }else{
       S.conn.send({type:'role-seen'});
       S.phase='night';S.loading=true;render();
     }
   });
-  on('goBtnDetConfirm',()=>{
-    sendNightAction(S.nightActionType,S._detTarget);
-  });
-  on('goBtnCupidConfirm',()=>{
-    if(S.cupidPick.length===2) sendNightAction('cupid-link',S.cupidPick);
-  });
-  on('goBtnBeginVote',()=>{
-    if(S.isHost) hostBeginVoting();
-  });
-  on('goBtnNextNight',()=>{
-    if(S.isHost){S.nightNumber++;hostBeginNight();}
-    else{S.conn.send({type:'next-night'});S.phase='night';S.loading=true;render();}
-  });
+  on('goBtnDetConfirm',()=>{sendNightAction(S.nightActionType,S._detTarget);});
+  on('goBtnCupidConfirm',()=>{if(S.cupidPick.length===2)sendNightAction('cupid-link',S.cupidPick);});
+  on('goBtnBeginVote',()=>{if(S.isHost)hostBeginVoting();});
+  on('goBtnNextNight',()=>{if(S.isHost){S.nightNumber++;hostBeginNight();}});
   on('goBtnPlayAgain',()=>{location.href=location.pathname;});
 
-  // Input enter
   const ni=document.getElementById('inp-name');
   if(ni){ni.addEventListener('keydown',e=>{if(e.key==='Enter')document.getElementById('goBtnNameNext')?.click();});setTimeout(()=>ni.focus(),60);}
   const ci=document.getElementById('inp-code');
@@ -485,27 +476,25 @@ function bind() {
     ci.addEventListener('input',e=>{e.target.value=e.target.value.toUpperCase();});
     setTimeout(()=>ci.focus(),60);}
 
-  // Night action targets
   document.querySelectorAll('[data-act-id]').forEach(btn=>{
     btn.addEventListener('click',()=>{
       const id=btn.dataset.actId;
       if(S.nightActionType==='cupid-link'){
-        if(S.cupidPick.includes(id)) S.cupidPick=S.cupidPick.filter(x=>x!==id);
-        else if(S.cupidPick.length<2) S.cupidPick.push(id);
+        if(S.cupidPick.includes(id))S.cupidPick=S.cupidPick.filter(x=>x!==id);
+        else if(S.cupidPick.length<2)S.cupidPick.push(id);
         render();
-      } else if(S.nightActionType==='detective-investigate'){
+      }else if(S.nightActionType==='detective-investigate'){
         const t=S.nightActionTargets.find(p=>p.id===id);
         S.nightActionResult=t?.isMafia||false;
         S._detName=t?.name||'';
         S._detTarget=id;
         render();
-      } else {
+      }else{
         sendNightAction(S.nightActionType,id);
       }
     });
   });
 
-  // Vote buttons
   document.querySelectorAll('[data-vote-id]').forEach(btn=>{
     btn.addEventListener('click',()=>{
       const id=btn.dataset.voteId==='__skip__'?null:btn.dataset.voteId;
@@ -527,21 +516,49 @@ function genCode(){
   let s='';for(let i=0;i<6;i++)s+=c[Math.floor(Math.random()*c.length)];return s;
 }
 
-function createRoom(){
+function createRoom(retryCount,cfgIdx){
+  retryCount=retryCount||0;cfgIdx=cfgIdx||0;
   const code=genCode();
   S.roomCode=code;S.isHost=true;S.myId='host';
+  S.loading=true;S.error='';
   history.replaceState(null,'',location.pathname+'?room='+code);
-  S.peer=new Peer('maf-'+code.toLowerCase());
+  render(); // show spinner — no more silent freeze
+
+  if(S.peer){try{S.peer.destroy();}catch(e){}}
+
+  const cfg=PEER_CONFIGS[cfgIdx%PEER_CONFIGS.length];
+  S.peer=cfg?new Peer('maf-'+code.toLowerCase(),cfg):new Peer('maf-'+code.toLowerCase());
+
+  // Hard 10-second timeout
+  const tid=setTimeout(()=>{
+    if(!S.loading)return;
+    try{S.peer.destroy();}catch(e){}
+    if(cfgIdx<PEER_CONFIGS.length-1){
+      createRoom(retryCount,cfgIdx+1); // try next broker config
+    }else{
+      S.loading=false;
+      S.error='Could not reach game server. Check your connection and try again.';
+      render();
+    }
+  },10000);
+
   S.peer.on('open',()=>{
+    clearTimeout(tid);
+    S.loading=false;
     S.lobbyPlayers=[{id:'host',name:S.playerName,isHost:true,connected:true}];
     S.screen='lobby';render();
   });
   S.peer.on('error',err=>{
-    if(err.type==='unavailable-id'){S.peer.destroy();createRoom();return;}
-    S.error='Connection error: '+err.message;render();
+    clearTimeout(tid);
+    if(err.type==='unavailable-id'&&retryCount<5){createRoom(retryCount+1,cfgIdx);return;}
+    if((err.type==='network'||err.type==='server-error')&&cfgIdx<PEER_CONFIGS.length-1){createRoom(retryCount,cfgIdx+1);return;}
+    S.loading=false;
+    S.error='Connection error ('+(err.type||'unknown')+'). Try refreshing.';
+    render();
   });
   S.peer.on('connection',conn=>{
     conn.on('open',()=>{
+      S.conns[conn.peer]=conn;
       conn.on('data',msg=>hostOnMsg(conn,msg));
       conn.on('close',()=>{
         const p=S.lobbyPlayers.find(x=>x.id===conn.peer);
@@ -557,11 +574,26 @@ function doJoin(){
   const code=(document.getElementById('inp-code')?.value||'').trim().toUpperCase();
   if(!code||code.length<4){S.error='Please enter a valid room code.';render();return;}
   S.roomCode=code;S.isHost=false;S.loading=true;S.error='';render();
-  S.peer=new Peer();
+
+  if(S.peer){try{S.peer.destroy();}catch(e){}}
+
+  const cfg=PEER_CONFIGS[0];
+  S.peer=cfg?new Peer(cfg):new Peer();
+
+  const tid=setTimeout(()=>{
+    if(!S.loading)return;
+    try{S.peer.destroy();}catch(e){}
+    S.loading=false;S.error='Could not reach game server. Check your connection.';S.screen='join';render();
+  },10000);
+
   S.peer.on('open',()=>{
     S.myId=S.peer.id;
     S.conn=S.peer.connect('maf-'+code.toLowerCase(),{reliable:true});
+    const ctid=setTimeout(()=>{
+      if(S.loading){S.loading=false;S.error='Could not connect. Check the room code.';S.screen='join';render();}
+    },8000);
     S.conn.on('open',()=>{
+      clearTimeout(tid);clearTimeout(ctid);
       S.loading=false;
       S.conn.send({type:'join',name:S.playerName});
       S.screen='lobby';render();
@@ -570,9 +602,9 @@ function doJoin(){
     S.conn.on('close',()=>{
       if(S.phase!=='over'){S.error='Lost connection to host.';S.screen='join';S.loading=false;render();}
     });
-    S.conn.on('error',()=>{S.error='Could not connect. Check the room code.';S.loading=false;S.screen='join';render();});
+    S.conn.on('error',()=>{clearTimeout(tid);clearTimeout(ctid);S.error='Could not connect. Check the room code.';S.loading=false;S.screen='join';render();});
   });
-  S.peer.on('error',err=>{S.error='Connection failed: '+err.message;S.loading=false;S.screen='join';render();});
+  S.peer.on('error',err=>{clearTimeout(tid);S.error='Connection failed: '+(err.message||err.type||'unknown');S.loading=false;S.screen='join';render();});
 }
 
 function broadcast(msg){Object.values(S.conns).forEach(c=>{try{c.send(msg);}catch(e){}});}
@@ -582,68 +614,34 @@ function broadcastLobby(){broadcast({type:'lobby',players:S.lobbyPlayers,setting
 function hostOnMsg(conn,msg){
   if(msg.type==='join'){
     const id=conn.peer;
-    S.conns[id]=conn;
     const ex=S.lobbyPlayers.find(p=>p.id===id);
-    if(ex)ex.connected=true;
+    if(ex){ex.connected=true;ex.name=msg.name;}
     else S.lobbyPlayers.push({id,name:msg.name,isHost:false,connected:true});
     broadcastLobby();render();
-  }
-  else if(msg.type==='role-seen'){
-    S._rolesReady=(S._rolesReady||0)+1;
-    checkAllRolesReady();
-  }
-  else if(msg.type==='night-action'){
+  }else if(msg.type==='role-seen'){
+    S._rolesReady++;checkAllRolesReady();
+  }else if(msg.type==='night-action'){
     hostProcessAction(conn.peer,msg.actionType,msg.target);
-  }
-  else if(msg.type==='vote'){
+  }else if(msg.type==='vote'){
     hostProcessVote(conn.peer,msg.targetId);
-  }
-  else if(msg.type==='next-night'){
-    // Handled by host button only
   }
 }
 
 function checkAllRolesReady(){
-  if(S._rolesReady>=S.lobbyPlayers.length){
-    S._rolesReady=0;
-    hostBeginNight();
-  }
+  if(S._rolesReady>=S._totalPlayers){S._rolesReady=0;hostBeginNight();}
 }
 
 // ─── GUEST MSG ────────────────────────────────────────────────────────────────
 function guestOnMsg(msg){
-  if(msg.type==='lobby'){
-    S.lobbyPlayers=msg.players;S.settings=msg.settings;S.screen='lobby';render();
-  }
-  else if(msg.type==='game-start'){
-    S.myRole=msg.role;
-    S.players=msg.players;
-    S.phase='roleReveal';S.screen='game';render();
-  }
-  else if(msg.type==='night-start'){
-    S.phase='night';S.narration=msg.narration||'';S.loading=false;
-    S.nightNumber=msg.nightNumber||S.nightNumber;
-    S.nightActionType=null;S.nightActionResult=null;S.cupidPick=[];render();
-  }
-  else if(msg.type==='your-turn'){
-    S.phase='nightAction';S.nightActionType=msg.actionType;
-    S.nightActionTargets=msg.targets;S.nightActionResult=null;S.cupidPick=[];render();
-  }
-  else if(msg.type==='day-start'){
-    S.phase='day';S.nightDead=msg.dead;S.narration=msg.narration;
-    S.loading=false;S.players=msg.players;S.nightNumber=msg.nightNumber;render();
-  }
-  else if(msg.type==='vote-start'){
-    S.phase='vote';S.voteData={};S.players=msg.players;render();
-  }
-  else if(msg.type==='vote-result'){
-    S.phase='voteResult';S.votedOut=msg.eliminated;S.narration=msg.narration;
-    S.loading=false;S.players=msg.players;S.winner=msg.winner||null;render();
-  }
-  else if(msg.type==='game-over'){
-    S.phase='over';S.winner=msg.winner;S.narration=msg.narration;
-    S.loading=false;S.players=msg.players;S.screen='game';render();
-  }
+  if(msg.type==='lobby'){S.lobbyPlayers=msg.players;S.settings=msg.settings;S.screen='lobby';render();}
+  else if(msg.type==='game-start'){S.myRole=msg.role;S.players=msg.players;S.phase='roleReveal';S.screen='game';render();}
+  else if(msg.type==='night-begin'){S.nightNumber=msg.nightNumber;S.phase='night';S.narration='';S.loading=true;render();}
+  else if(msg.type==='night-start'){S.phase='night';S.narration=msg.narration||'';S.loading=false;S.nightNumber=msg.nightNumber||S.nightNumber;S.nightActionType=null;S.nightActionResult=null;S.cupidPick=[];render();}
+  else if(msg.type==='your-turn'){S.phase='nightAction';S.nightActionType=msg.actionType;S.nightActionTargets=msg.targets;S.nightActionResult=null;S.cupidPick=[];render();}
+  else if(msg.type==='day-start'){S.phase='day';S.nightDead=msg.dead;S.narration=msg.narration;S.loading=false;S.players=msg.players;S.nightNumber=msg.nightNumber;render();}
+  else if(msg.type==='vote-start'){S.phase='vote';S.voteData={};S.players=msg.players;render();}
+  else if(msg.type==='vote-result'){S.phase='voteResult';S.votedOut=msg.eliminated;S.narration=msg.narration;S.loading=false;S.players=msg.players;S.winner=msg.winner||null;render();}
+  else if(msg.type==='game-over'){S.phase='over';S.winner=msg.winner;S.narration=msg.narration;S.loading=false;S.players=msg.players;S.screen='game';render();}
 }
 
 // ─── GAME LOGIC (HOST) ────────────────────────────────────────────────────────
@@ -653,7 +651,6 @@ async function hostStartGame(){
   const cfg=S.settings;
   const spec=cfg.mafia+cfg.doctor+cfg.detective+cfg.cupid+cfg.jester;
   if(spec>pl.length){S.error='Too many special roles for this player count!';render();return;}
-
   const roles=[];
   for(let i=0;i<cfg.mafia;i++)roles.push('Mafia');
   if(cfg.doctor)roles.push('Doctor');
@@ -661,97 +658,65 @@ async function hostStartGame(){
   if(cfg.cupid)roles.push('Cupid');
   if(cfg.jester)roles.push('Jester');
   while(roles.length<pl.length)roles.push('Villager');
-
   const shuffled=shuffle(roles);
   S.players=pl.map((p,i)=>({id:p.id,name:p.name,role:shuffled[i],alive:true}));
-  S.lovers=[];S.nightNumber=1;S.nightActions={};S._rolesReady=0;
-
-  // Send each player their role
+  S.lovers=[];S.nightNumber=1;S.nightActions={};
+  S._totalPlayers=pl.length;S._rolesReady=0;
   S.players.forEach(player=>{
-    const mafPals=S.players.filter(p=>p.role==='Mafia'&&p.id!==player.id).map(p=>({id:p.id,name:p.name,role:'Mafia'}));
     const visPlayers=S.players.map(p=>({
       id:p.id,name:p.name,alive:p.alive,
       role:(p.id===player.id||(player.role==='Mafia'&&p.role==='Mafia'))?p.role:undefined
     }));
     const gmsg={type:'game-start',role:player.role,players:visPlayers};
-    if(player.id==='host'){
-      S.myRole=player.role;S.screen='game';S.phase='roleReveal';
-    } else {
-      S.conns[player.id]?.send(gmsg);
-    }
+    if(player.id==='host'){S.myRole=player.role;S.screen='game';S.phase='roleReveal';}
+    else S.conns[player.id]?.send(gmsg);
   });
   render();
 }
 
 async function hostBeginNight(){
-  S.nightActions={};S._nightQ=null;S.phase='night';S.loading=true;render();
+  S.nightActions={};S._nightQ=[];S.phase='night';S.loading=true;render();
+  broadcast({type:'night-begin',nightNumber:S.nightNumber});
   const t=await callGM(`Mafia Game Master. Night ${S.nightNumber} begins. One short chilling sentence about darkness falling on the village.`);
   S._nightNarration=t;S.narration=t;S.loading=false;
   broadcast({type:'night-start',narration:t,nightNumber:S.nightNumber});
-  render();
-  buildAndRunNightQueue();
+  render();buildAndRunNightQueue();
 }
 
 function buildAndRunNightQueue(){
-  const alive=S.players.filter(p=>p.alive);
-  const q=[];
+  const alive=S.players.filter(p=>p.alive);const q=[];
   if(S.nightNumber===1){const c=alive.find(p=>p.role==='Cupid');if(c)q.push(c);}
-  // All alive Mafia (first one acts as speaker)
-  const mafia=alive.filter(p=>p.role==='Mafia');
-  if(mafia.length>0)q.push(mafia[0]);
+  const mafia=alive.filter(p=>p.role==='Mafia');if(mafia.length>0)q.push(mafia[0]);
   const doc=alive.find(p=>p.role==='Doctor');if(doc)q.push(doc);
   const det=alive.find(p=>p.role==='Detective');if(det)q.push(det);
-  S._nightQ=[...q];
-  runNextNightActor();
+  S._nightQ=[...q];runNextNightActor();
 }
 
 function runNextNightActor(){
   if(!S._nightQ||S._nightQ.length===0){hostResolveNight();return;}
-  const actor=S._nightQ.shift();
-  S._curActor=actor;
-
-  const alive=S.players.filter(p=>p.alive);
-  const others=alive.filter(p=>p.id!==actor.id);
-
+  const actor=S._nightQ.shift();S._curActor=actor;
+  const alive=S.players.filter(p=>p.alive);const others=alive.filter(p=>p.id!==actor.id);
   let actionType='';let targets=[];
-  if(actor.role==='Cupid'){
-    actionType='cupid-link';
-    targets=alive.map(p=>({id:p.id,name:p.name}));
-  }else if(actor.role==='Mafia'){
-    actionType='mafia-kill';
-    targets=others.filter(p=>p.role!=='Mafia').map(p=>({id:p.id,name:p.name}));
-  }else if(actor.role==='Doctor'){
-    actionType='doctor-protect';
-    targets=alive.map(p=>({id:p.id,name:p.name}));
-  }else if(actor.role==='Detective'){
-    actionType='detective-investigate';
-    targets=others.map(p=>({id:p.id,name:p.name,isMafia:p.role==='Mafia'}));
-  }
-
+  if(actor.role==='Cupid'){actionType='cupid-link';targets=alive.map(p=>({id:p.id,name:p.name}));}
+  else if(actor.role==='Mafia'){actionType='mafia-kill';targets=others.filter(p=>p.role!=='Mafia').map(p=>({id:p.id,name:p.name}));}
+  else if(actor.role==='Doctor'){actionType='doctor-protect';targets=alive.map(p=>({id:p.id,name:p.name}));}
+  else if(actor.role==='Detective'){actionType='detective-investigate';targets=others.map(p=>({id:p.id,name:p.name,isMafia:p.role==='Mafia'}));}
   if(actor.id==='host'){
-    S.phase='nightAction';S.nightActionType=actionType;
-    S.nightActionTargets=targets;S.nightActionResult=null;S.cupidPick=[];render();
-  } else {
-    S.conns[actor.id]?.send({type:'your-turn',actionType,targets});
-    // Keep all others on night screen
-    S.phase='night';render();
+    S.phase='nightAction';S.nightActionType=actionType;S.nightActionTargets=targets;S.nightActionResult=null;S.cupidPick=[];render();
+  }else{
+    S.conns[actor.id]?.send({type:'your-turn',actionType,targets});S.phase='night';render();
   }
 }
 
 function sendNightAction(actionType,target){
-  if(S.isHost){
-    hostProcessAction('host',actionType,target);
-    S.phase='night';render();
-  } else {
-    S.conn.send({type:'night-action',actionType,target});
-    S.phase='night';S.nightActionType=null;render();
-  }
+  if(S.isHost){hostProcessAction('host',actionType,target);S.phase='night';render();}
+  else{S.conn.send({type:'night-action',actionType,target});S.phase='night';S.nightActionType=null;render();}
 }
 
 function hostProcessAction(actorId,actionType,target){
-  if(actionType==='mafia-kill'){S.nightActions.mafiaTarget=target;}
-  else if(actionType==='doctor-protect'){S.nightActions.doctorTarget=target;}
-  else if(actionType==='detective-investigate'){S.nightActions.detectiveTarget=target;}
+  if(actionType==='mafia-kill')S.nightActions.mafiaTarget=target;
+  else if(actionType==='doctor-protect')S.nightActions.doctorTarget=target;
+  else if(actionType==='detective-investigate')S.nightActions.detectiveTarget=target;
   else if(actionType==='cupid-link'){
     S.nightActions.cupidTargets=Array.isArray(target)?target:[target];
     S.lovers=S.nightActions.cupidTargets;
@@ -761,44 +726,23 @@ function hostProcessAction(actorId,actionType,target){
 }
 
 async function hostResolveNight(){
-  const na=S.nightActions;
-  let dead=[];
+  const na=S.nightActions;let dead=[];
   if(na.mafiaTarget&&na.mafiaTarget!==na.doctorTarget){
-    const t=S.players.find(p=>p.id===na.mafiaTarget&&p.alive);
-    if(t)dead.push(t);
+    const t=S.players.find(p=>p.id===na.mafiaTarget&&p.alive);if(t)dead.push(t);
   }
-  // Lover cascade
-  const seen=new Set(dead.map(d=>d.id));
-  let chg=true;
-  while(chg){chg=false;
-    [...dead].forEach(d=>{
-      if(S.lovers.includes(d.id)){
-        S.lovers.forEach(lid=>{
-          if(lid!==d.id&&!seen.has(lid)){
-            const p=S.players.find(x=>x.id===lid&&x.alive);
-            if(p){dead.push(p);seen.add(lid);chg=true;}
-          }
-        });
-      }
-    });
-  }
+  const seen=new Set(dead.map(d=>d.id));let chg=true;
+  while(chg){chg=false;[...dead].forEach(d=>{if(S.lovers.includes(d.id)){S.lovers.forEach(lid=>{if(lid!==d.id&&!seen.has(lid)){const p=S.players.find(x=>x.id===lid&&x.alive);if(p){dead.push(p);seen.add(lid);chg=true;}}});}}); }
   const deadSet=new Set(dead.map(d=>d.id));
   S.players=S.players.map(p=>({...p,alive:deadSet.has(p.id)?false:p.alive}));
   S.nightDead=dead;S.nightActions={};S.loading=true;render();
-
   const w=checkWin(S.players);
   const prompt=dead.length===0
     ?`Mafia Game Master. Night ${S.nightNumber}: Doctor saved the target. One eerie sentence about a peaceful dawn.`
     :`Mafia Game Master. Night ${S.nightNumber}: Found dead at dawn: ${dead.map(d=>d.name).join(', ')}. 2 atmospheric sentences.`;
-  const t=await callGM(prompt);
-  S.narration=t;S.loading=false;
-
+  const t=await callGM(prompt);S.narration=t;S.loading=false;
   if(w){await hostEndGame(w);return;}
-
-  const dayMsg={type:'day-start',dead:dead.map(d=>({id:d.id,name:d.name,role:d.role})),
-    narration:t,players:S.players.map(p=>({id:p.id,name:p.name,alive:p.alive})),nightNumber:S.nightNumber};
-  broadcast(dayMsg);
-  S.phase='day';render();
+  const dayMsg={type:'day-start',dead:dead.map(d=>({id:d.id,name:d.name,role:d.role})),narration:t,players:S.players.map(p=>({id:p.id,name:p.name,alive:p.alive})),nightNumber:S.nightNumber};
+  broadcast(dayMsg);S.phase='day';render();
 }
 
 function hostBeginVoting(){
@@ -809,32 +753,29 @@ function hostBeginVoting(){
 }
 
 function submitVote(targetId){
-  S.voteData[S.myId]=targetId;render();
+  const voteVal=targetId===null?'__abstain__':targetId;
+  S.voteData[S.myId]=voteVal;render();
   if(S.isHost)hostProcessVote('host',targetId);
   else S.conn.send({type:'vote',targetId});
 }
 
 function hostProcessVote(voterId,targetId){
-  S.voteData[voterId]=targetId;
+  const voteVal=targetId===null?'__abstain__':targetId;
+  S.voteData[voterId]=voteVal;
   const alive=S.players.filter(p=>p.alive);
   const cast=alive.filter(p=>S.voteData.hasOwnProperty(p.id)).length;
   if(cast>=alive.length)hostResolveVote();
 }
 
 async function hostResolveVote(){
-  const alive=S.players.filter(p=>p.alive);
-  const counts={};
-  alive.forEach(p=>{const v=S.voteData[p.id];if(v)counts[v]=(counts[v]||0)+1;});
+  const alive=S.players.filter(p=>p.alive);const counts={};
+  alive.forEach(p=>{const v=S.voteData[p.id];if(v&&v!=='__abstain__')counts[v]=(counts[v]||0)+1;});
   const sorted=Object.entries(counts).sort((a,b)=>b[1]-a[1]);
   let elim=null;
-  if(sorted.length>0&&(sorted.length===1||sorted[0][1]>sorted[1][1])){
-    elim=S.players.find(p=>p.id===sorted[0][0]);
-  }
+  if(sorted.length>0&&(sorted.length===1||sorted[0][1]>sorted[1][1]))elim=S.players.find(p=>p.id===sorted[0][0]);
   if(elim){
     S.players=S.players.map(p=>({...p,alive:p.id===elim.id?false:p.alive}));
-    if(S.lovers.includes(elim.id)){
-      S.lovers.forEach(lid=>{if(lid!==elim.id)S.players=S.players.map(p=>({...p,alive:p.id===lid?false:p.alive}));});
-    }
+    if(S.lovers.includes(elim.id))S.lovers.forEach(lid=>{if(lid!==elim.id)S.players=S.players.map(p=>({...p,alive:p.id===lid?false:p.alive}));});
   }
   S.votedOut=elim||null;S.loading=true;render();
   const w=checkWin(S.players,elim);
@@ -843,9 +784,7 @@ async function hostResolveVote(){
     :`Mafia game. Day vote tied — no elimination. One tense sentence about the unresolved tension.`);
   S.narration=t;S.loading=false;
   if(w){await hostEndGame(w);return;}
-  const msg={type:'vote-result',eliminated:elim?{id:elim.id,name:elim.name,role:elim.role}:null,
-    narration:t,players:S.players.map(p=>({id:p.id,name:p.name,alive:p.alive})),winner:null};
-  broadcast(msg);
+  broadcast({type:'vote-result',eliminated:elim?{id:elim.id,name:elim.name,role:elim.role}:null,narration:t,players:S.players.map(p=>({id:p.id,name:p.name,alive:p.alive})),winner:null});
   S.phase='voteResult';render();
 }
 
@@ -853,8 +792,7 @@ async function hostEndGame(winner){
   S.winner=winner;S.loading=true;S.phase='over';render();
   const t=await callGM(`Mafia party game: ${winner} won. 2 dramatic climactic sentences as the final announcement.`);
   S.narration=t;S.loading=false;
-  broadcast({type:'game-over',winner,narration:t,players:S.players});
-  render();
+  broadcast({type:'game-over',winner,narration:t,players:S.players});render();
 }
 
 // ─── HELPERS ──────────────────────────────────────────────────────────────────
@@ -862,17 +800,18 @@ function checkWin(ps,elim=null){
   if(elim?.role==='Jester')return'Jester';
   const aM=ps.filter(p=>p.alive&&p.role==='Mafia').length;
   const aT=ps.filter(p=>p.alive&&p.role!=='Mafia'&&p.role!=='Jester').length;
-  if(aM===0)return'Town';
-  if(aM>=aT)return'Mafia';
-  return null;
+  if(aM===0)return'Town';if(aM>=aT)return'Mafia';return null;
 }
 function shuffle(a){const b=[...a];for(let i=b.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]];}return b;}
+
 async function callGM(prompt){
   try{
     const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',
       headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:200,messages:[{role:'user',content:prompt}]})});
-    const d=await r.json();return d.content[0].text;
+      body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:200,messages:[{role:'user',content:prompt}]})});
+    const d=await r.json();
+    if(d.content&&d.content[0]&&d.content[0].text)return d.content[0].text;
+    return'The village stirs in uneasy silence…';
   }catch{return'The village stirs in uneasy silence…';}
 }
 function esc(s){return String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
