@@ -1,887 +1,626 @@
+  
  <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-<title>MAFIA — The Village Awaits</title>
-<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Cinzel:wght@400;600&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/peerjs/1.5.4/peerjs.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Happy Birthday Ayesha 🎉</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lovers+Quarrel&family=Poppins:wght@300;500;700&family=Dancing+Script:wght@400;600&display=swap" rel="stylesheet">
+
 <style>
-:root{--bg:#0a0805;--wood:#1c1208;--panel:#251a0d;--panel2:#2e2010;--amber:#d48a1c;--gold:#f0b840;--cream:#e8dcc8;--muted:#9a8a72;--red:#8b1a1a;--red2:#c0392b;--green:#1a4a2e;--green2:#27ae60;--blue:#1a2a4a;--radius:3px;}
-*{box-sizing:border-box;margin:0;padding:0;}
-html,body{height:100%;font-family:'Crimson Text',Georgia,serif;background:var(--bg);color:var(--cream);overflow-x:hidden;}
-body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse at 50% 100%,rgba(180,100,0,.12),transparent 65%);pointer-events:none;z-index:0;}
-#app{min-height:100vh;position:relative;z-index:1;}
-.page{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px;}
-.card{background:linear-gradient(160deg,var(--panel) 0%,var(--panel2) 50%,var(--panel) 100%);border:1px solid rgba(212,138,28,.28);border-radius:var(--radius);padding:28px 24px;width:100%;max-width:460px;box-shadow:0 24px 64px rgba(0,0,0,.9),inset 0 1px 0 rgba(240,184,64,.12);position:relative;overflow:hidden;}
-.card::after{content:'';position:absolute;inset:4px;border:1px solid rgba(212,138,28,.08);border-radius:2px;pointer-events:none;}
-h1{font-family:'Cinzel Decorative',serif;font-size:clamp(36px,10vw,58px);color:var(--gold);text-align:center;letter-spacing:4px;text-shadow:0 0 40px rgba(240,184,64,.5),0 2px 8px rgba(0,0,0,.9);margin-bottom:6px;}
-h2{font-family:'Cinzel',serif;font-size:clamp(18px,5vw,22px);color:var(--gold);text-align:center;letter-spacing:3px;margin-bottom:18px;}
-h3{font-family:'Cinzel',serif;font-size:14px;color:var(--amber);letter-spacing:2px;margin-bottom:12px;}
-.sub{text-align:center;color:var(--muted);font-style:italic;font-size:16px;margin-bottom:24px;line-height:1.65;}
-input[type=text],input[type=number]{width:100%;background:rgba(0,0,0,.45);border:1px solid rgba(212,138,28,.35);border-radius:var(--radius);color:var(--cream);font-family:'Crimson Text',serif;font-size:18px;padding:12px 14px;outline:none;transition:border-color .2s;margin-bottom:14px;}
-input::placeholder{color:rgba(200,184,152,.35);}
-input:focus{border-color:var(--amber);}
-.btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;background:linear-gradient(180deg,rgba(212,138,28,.18),rgba(100,65,8,.45));border:1px solid var(--amber);border-radius:var(--radius);color:var(--gold);font-family:'Cinzel',serif;font-size:13px;font-weight:600;letter-spacing:2px;padding:14px 20px;cursor:pointer;transition:all .2s;margin-bottom:10px;text-align:center;}
-.btn:hover:not(:disabled){background:linear-gradient(180deg,rgba(212,138,28,.38),rgba(180,115,18,.5));box-shadow:0 0 24px rgba(212,138,28,.28);}
-.btn:disabled{opacity:.35;cursor:not-allowed;}
-.btn.ghost{border-color:rgba(200,184,152,.25);color:var(--muted);background:rgba(0,0,0,.15);}
-.btn.ghost:hover:not(:disabled){border-color:rgba(200,184,152,.5);color:var(--cream);background:rgba(255,255,255,.06);}
-.btn.danger{border-color:var(--red2);color:#e74c3c;background:rgba(139,26,26,.15);}
-.btn.success{border-color:var(--green2);color:#2ecc71;background:rgba(26,74,46,.15);}
-.divider{height:1px;background:linear-gradient(90deg,transparent,rgba(212,138,28,.35),transparent);margin:18px 0;}
-.code-wrap{background:rgba(0,0,0,.5);border:1px solid rgba(212,138,28,.4);border-radius:var(--radius);padding:16px;text-align:center;margin-bottom:14px;}
-.code-lbl{font-size:11px;letter-spacing:3px;color:var(--muted);text-transform:uppercase;margin-bottom:6px;}
-.code-val{font-family:'Cinzel',serif;font-size:30px;letter-spacing:10px;color:var(--gold);text-shadow:0 0 20px rgba(240,184,64,.4);}
-.link-row{display:flex;gap:6px;align-items:center;background:rgba(0,0,0,.4);border:1px solid rgba(212,138,28,.2);border-radius:var(--radius);padding:9px 12px;margin-bottom:14px;}
-.link-row span{flex:1;font-size:12px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.link-row button{flex-shrink:0;background:rgba(212,138,28,.18);border:1px solid rgba(212,138,28,.4);border-radius:2px;color:var(--amber);font-family:'Cinzel',serif;font-size:11px;letter-spacing:1px;padding:5px 10px;cursor:pointer;transition:background .2s;}
-.link-row button:hover{background:rgba(212,138,28,.38);}
-.player-row{display:flex;align-items:center;gap:10px;padding:9px 12px;background:rgba(0,0,0,.22);border:1px solid rgba(212,138,28,.12);border-radius:var(--radius);margin-bottom:5px;font-size:16px;}
-.dot{width:8px;height:8px;border-radius:50%;background:#2ecc71;flex-shrink:0;}
-.dot.off{background:#e74c3c;}
-.setting-row{display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(212,138,28,.1);}
-.setting-row:last-child{border-bottom:none;}
-.counter{display:flex;align-items:center;gap:10px;}
-.counter button{width:28px;height:28px;background:rgba(212,138,28,.12);border:1px solid rgba(212,138,28,.35);border-radius:2px;color:var(--amber);font-size:17px;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1;transition:background .2s;}
-.counter button:hover{background:rgba(212,138,28,.3);}
-.counter span{color:var(--gold);font-family:'Cinzel',serif;font-size:17px;min-width:22px;text-align:center;}
-.target-btn{display:block;width:100%;background:rgba(0,0,0,.2);border:1px solid rgba(200,184,152,.18);border-radius:var(--radius);color:var(--cream);font-family:'Crimson Text',serif;font-size:17px;padding:11px 14px;cursor:pointer;text-align:left;transition:all .15s;margin-bottom:6px;}
-.target-btn:hover{background:rgba(212,138,28,.18);border-color:rgba(212,138,28,.5);}
-.target-btn.sel{background:rgba(212,138,28,.22);border-color:rgba(212,138,28,.7);}
-.italic{font-style:italic;color:var(--muted);line-height:1.7;font-size:16px;}
-.alert{padding:10px 14px;border-radius:var(--radius);margin-bottom:12px;font-size:15px;line-height:1.5;}
-.alert.err{background:rgba(139,26,26,.2);border:1px solid rgba(192,57,43,.4);color:#e74c3c;}
-.alert.info{background:rgba(26,50,74,.3);border:1px solid rgba(41,128,185,.35);color:#5dade2;}
-.alert.ok{background:rgba(26,74,46,.3);border:1px solid rgba(39,174,96,.35);color:#2ecc71;}
-.candle{display:inline-block;animation:flicker 3s infinite alternate;}
-@keyframes flicker{0%,100%{opacity:1}30%{opacity:.85}60%{opacity:.92}80%{opacity:.88}}
-.spin{display:inline-block;width:18px;height:18px;border:2px solid rgba(212,138,28,.25);border-top-color:var(--amber);border-radius:50%;animation:rot .7s linear infinite;vertical-align:middle;}
-@keyframes rot{to{transform:rotate(360deg)}}
-.fade{animation:fdin .35s ease;}
-@keyframes fdin{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
-.tag{display:inline-block;padding:4px 12px;border-radius:2px;font-family:'Cinzel',serif;font-size:13px;letter-spacing:1px;font-weight:600;}
-.dead-row{opacity:.3;}
+*{margin:0;padding:0;box-sizing:border-box}
+body{
+  min-height:100vh;
+  font-family:'Poppins',sans-serif;
+  background:linear-gradient(135deg,#ff9a9e,#fad0c4,#fad0c4);
+  overflow-x:hidden;
+  transition:1s;
+}
+body.night{
+  background:radial-gradient(circle at top,#0b1a33,#000);
+  color:#fff;
+}
+
+/* CONFETTI */
+.confetti{position:fixed;inset:0;pointer-events:none;z-index:0}
+.confetti span{
+  position:absolute;width:10px;height:14px;
+  background:hsl(var(--h),90%,60%);
+  top:-20px;animation:fall linear infinite;
+  box-shadow:0 0 10px hsl(var(--h),90%,60%);
+}
+@keyframes fall{to{transform:translateY(110vh) rotate(360deg)}}
+
+/* TOGGLE */
+.toggle{
+  position:fixed;top:20px;right:20px;
+  padding:10px 22px;border-radius:30px;border:none;
+  background:#111;color:#fff;
+  cursor:pointer;z-index:2000;
+  font-size:0.9rem;
+}
+
+/* APP */
+.app{
+  max-width:900px;margin:auto;
+  padding:50px 20px;
+  text-align:center;
+  position:relative;z-index:1;
+}
+.step{display:none;animation:fadeUp 1s ease}
+.step.active{display:block}
+
+/* CARD */
+.card{
+  background:linear-gradient(135deg,#ffffff,#fef6ff);
+  padding:45px 25px;border-radius:30px;
+  box-shadow:0 30px 60px rgba(0,0,0,.2);
+  animation:cardFloat 3s ease-in-out infinite;
+}
+@keyframes cardFloat{
+  0%,100%{transform:translateY(0px)}
+  50%{transform:translateY(-10px)}
+}
+body.night .card{
+  background:linear-gradient(135deg,#1a2a4f,#0b1a33);
+}
+body.night .wish{
+  background:linear-gradient(135deg,#2d4a6f,#1a3050);
+  color:#fff;
+}
+body.night .book{
+  background:linear-gradient(135deg,#2d4a6f,#1a3050);
+}
+body.night .page{
+  color:#fff;
+}
+
+/* HEADINGS */
+h1,h2{
+  background:linear-gradient(90deg,#ff4ecd,#ffb347,#4facfe);
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+  animation:gradientShift 3s ease infinite;
+  background-size:200% 200%;
+  font-size:clamp(1.5rem, 5vw, 2.5rem);
+}
+h1{font-size:clamp(1.8rem, 6vw, 3rem)}
+@keyframes gradientShift{
+  0%{background-position:0% 50%}
+  50%{background-position:100% 50%}
+  100%{background-position:0% 50%}
+}
+
+/* PANDA */
+.panda{
+  font-size:clamp(80px, 20vw, 120px);
+  animation:bounce 2.5s infinite;
+  filter:drop-shadow(0 0 20px rgba(255,184,108,0.6));
+}
+@keyframes bounce{50%{transform:translateY(-25px) rotate(5deg)}}
+
+/* BUTTON */
+button{
+  margin-top:25px;
+  padding:14px 42px;
+  border:none;border-radius:40px;
+  background:linear-gradient(135deg,#ff4ecd,#4facfe);
+  color:#fff;font-size:clamp(0.9rem, 3vw, 1.1rem);
+  cursor:pointer;transition:.3s;
+  box-shadow:0 8px 20px rgba(255,78,205,0.4);
+  animation:pulse 2s infinite;
+}
+button:hover{transform:scale(1.1);box-shadow:0 12px 30px rgba(255,78,205,0.6)}
+@keyframes pulse{
+  0%,100%{box-shadow:0 8px 20px rgba(255,78,205,0.4)}
+  50%{box-shadow:0 8px 30px rgba(79,172,254,0.6)}
+}
+
+/* ===== PUZZLE - RESPONSIVE & FIXED DRAGGING ===== */
+.puzzle-wrap{
+  display:flex;
+  gap:20px;
+  justify-content:center;
+  align-items:flex-start;
+  margin-top:25px;
+  flex-wrap:wrap;
+}
+.puzzle-board{
+  width:min(300px, 90vw);
+  height:min(300px, 90vw);
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  position:relative;
+  border-radius:18px;
+  overflow:hidden;
+}
+.puzzle-board::before{
+  content:"";
+  position:absolute;inset:0;
+  background-image:url("sad_panda_painting-wallpaper-1920x1080.jpg");
+  background-size:100% 100%;
+  filter:blur(2px);opacity:.25;
+}
+.slot{
+  border:1px dashed rgba(255,255,255,.6);
+  position:relative;z-index:1;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+.slot.highlight{
+  background:rgba(79,172,254,0.3);
+  border:2px solid #4facfe;
+}
+.pieces{
+  display:grid;
+  grid-template-columns:repeat(3, min(100px, 28vw));
+  gap:12px;
+}
+.piece{
+  width:min(100px, 28vw);
+  height:min(100px, 28vw);
+  background-image:url("sad_panda_painting-wallpaper-1920x1080.jpg");
+  background-size:300% 300%;
+  border-radius:14px;
+  cursor:grab;
+  touch-action:none;
+  user-select:none;
+  transition:transform 0.2s;
+}
+.piece:active{
+  cursor:grabbing;
+  transform:scale(1.05);
+}
+.piece.dragging{
+  position:fixed;
+  z-index:9999;
+  pointer-events:none;
+  opacity:0.8;
+  transform:scale(1.1);
+}
+.piece.locked{
+  box-shadow:0 0 18px rgba(255,120,200,.6);
+  cursor:default;
+  width:100%;
+  height:100%;
+  border-radius:0;
+}
+
+#puzzleMsg{
+  margin-top:15px;
+  font-size:1.2rem;
+  font-weight:bold;
+  color:#ff4ecd;
+}
+
+/* ===== MATCH - RESPONSIVE ===== */
+.match{
+  display:grid;
+  grid-template-columns:repeat(4, min(70px, 18vw));
+  gap:clamp(8px, 2vw, 12px);
+  justify-content:center;
+  margin-top:25px;
+}
+.cardm{
+  width:min(70px, 18vw);
+  height:min(70px, 18vw);
+  background:#ffd1dc;
+  border-radius:12px;
+  font-size:clamp(1.2rem, 4vw, 1.8rem);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  cursor:pointer;
+  transition:transform 0.2s;
+}
+.cardm:hover{
+  transform:scale(1.05);
+}
+
+/* ===== BOOK & WISHES - RESPONSIVE ===== */
+.overlay{
+  position:fixed;inset:0;
+  background:rgba(0,0,0,.7);
+  display:none;
+  align-items:center;
+  justify-content:center;
+  z-index:3000;
+  padding:20px;
+}
+.overlay.show{display:flex}
+.book{
+  width:min(800px, 95vw);
+  height:min(500px, 80vh);
+  background:linear-gradient(135deg,#fff1eb,#ace0f9);
+  border-radius:25px;
+  box-shadow:0 40px 80px rgba(0,0,0,.4);
+  overflow:hidden;
+  position:relative;
+}
+.pages{
+  display:flex;
+  height:100%;
+  transition:transform .8s cubic-bezier(.68,-0.6,.32,1.6);
+}
+.page{
+  min-width:100%;
+  padding:clamp(20px, 5vw, 35px);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  font-family:'Dancing Script',cursive;
+  font-size:clamp(1.5rem, 5vw, 2.8rem);
+  line-height:1.6;
+}
+.nav{
+  position:absolute;
+  bottom:15px;
+  left:0;right:0;
+  display:flex;
+  justify-content:space-between;
+  padding:0 25px;
+}
+.arrow{
+  width:clamp(40px, 10vw, 50px);
+  height:clamp(40px, 10vw, 50px);
+  border-radius:50%;
+  background:linear-gradient(135deg,#ff4ecd,#4facfe);
+  color:#fff;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:clamp(1.2rem, 3vw, 1.6rem);
+  cursor:pointer;
+  transition:transform 0.2s;
+}
+.arrow:hover{
+  transform:scale(1.1);
+}
+.wish{
+  margin:15px auto;
+  padding:clamp(12px, 3vw, 18px);
+  max-width:620px;
+  background:linear-gradient(135deg,#ffecd2,#fcb69f);
+  border-radius:25px;
+  animation:wishFloat 3s ease-in-out infinite;
+  font-size:clamp(0.9rem, 2.5vw, 1rem);
+}
+@keyframes wishFloat{50%{transform:translateY(-10px)}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(40px)}to{opacity:1}}
+
+/* RESPONSIVE TEXT */
+p{
+  font-size:clamp(0.9rem, 2.5vw, 1.1rem);
+  line-height:1.6;
+}
+
+/* Mobile adjustments */
+@media (max-width: 768px) {
+  .app{
+    padding:30px 15px;
+  }
+  .card{
+    padding:30px 20px;
+  }
+  .puzzle-wrap{
+    flex-direction:column;
+    align-items:center;
+  }
+  .match{
+    grid-template-columns:repeat(4, 70px);
+  }
+}
+
+@media (max-width: 480px) {
+  .toggle{
+    top:10px;
+    right:10px;
+    padding:8px 18px;
+    font-size:0.8rem;
+  }
+  .match{
+    grid-template-columns:repeat(4, 60px);
+  }
+  .cardm{
+    width:60px;
+    height:60px;
+  }
+}
 </style>
 </head>
+
 <body>
-<div id="app"></div>
+
+<div class="confetti" id="confetti"></div>
+<button class="toggle" onclick="toggleMode()">🌙</button>
+
+<div class="app">
+
+<!-- INTRO -->
+<div class="step active">
+  <div class="card">
+    <h1>🎉 Happy Birthday Ayesha 🎉</h1>
+    <p>Surprisee for my PANDA ✨</p>
+    <button onclick="nextStep()">Let's Go 🎁</button>
+  </div>
+</div>
+
+<!-- PANDA -->
+<div class="step">
+  <div class="panda">🐼</div>
+  <div class="card">
+    <h2 style="margin-bottom: 15px;">My Panda 🐼💙</h2>
+    <p>You're not just a friend, you're family 💖</p>
+    <button onclick="nextStep()">Next ➜</button>
+  </div>
+</div>
+
+<!-- PUZZLE -->
+<div class="step">
+  <div class="card">
+    <h2>🧩 Complete the Picture</h2>
+    <div class="puzzle-wrap">
+      <div class="pieces" id="pieces"></div>
+      <div class="puzzle-board" id="board"></div>
+    </div>
+    <p id="puzzleMsg"></p>
+  </div>
+</div>
+
+<!-- MATCH -->
+<div class="step">
+  <div class="card">
+    <h2>💞 Matching Game</h2>
+    <div class="match" id="match"></div>
+  </div>
+</div>
+
+<!-- BOOK STEP -->
+<div class="step">
+  <div class="card">
+    <h2>📖 A Special Book</h2>
+    <p style="margin-top: 15px;">This is a small present for you</p>
+    <button onclick="openBook()">Open Book 📖</button>
+  </div>
+</div>
+
+<!-- WISHES -->
+<div class="step">
+  <div class="card">
+    <h2>💌 Wishes for You</h2>
+    <div class="wish">Happy Birthday! May your day be as amazing as you are</div>
+    <div class="wish">May happiness always find you ✨</div>
+    <div class="wish">May all your dreams come true 💫</div>
+    <div class="wish">May your life be full of colors 🌈</div>
+    <div class="wish">May your day be filled with joy and laughter 🎈</div>
+    <div class="wish">Wishing you endless love and success in the year ahead 🌟</div>
+    <div class="wish">Happy Birthday once again! 🎉</div>
+    <button onclick="nextStep()">Finish 🎊</button>
+  </div>
+</div>
+
+</div>
+
+<!-- BOOK OVERLAY -->
+<div class="overlay" id="bookOverlay">
+  <div style="width:100%;max-width:850px">
+    <div class="book">
+      <div class="pages" id="pages">
+        <div class="page"><p>Dear Ayesha 🌸<br><br>Happy Birthday 🎉🤍</p></div>
+        <div class="page"><p>You deserve happiness, peace, love, and success.</p></div>
+        <div class="page"><p>Jaruri nhe bat hu ya nhe,<br>magr dost hamesha dost huta ha 🤍</p></div>
+        <div class="page"><p>Meri Pandaaa hein ap tuu 🐼🐼<br>You are one of those friends who make me smile.</p></div>
+        <div class="page"><p>Zindagi mein bohat log aaye, bohat gaye,<br>Magar tum woh ho jo dil mein bas gaye.</p></div>
+        <div class="page"><p>Har mushkil mein tumhari muskurahat yaad aati hai ✨</p></div>
+        <div class="page"><p>Dua hai ke tumhari zindagi khushiyon se bhari rahe 🌸</p></div>
+        <div class="page"><p>Allah tumhein hamesha khush rakhe,<br>mehfooz rakhe, aur kamyab kare. Ameen 🤲</p></div>
+        <div class="page"><p>Happy Birthday once again 🤍<br>Always stay the same.</p></div>
+      </div>
+      <div class="nav">
+        <div class="arrow" onclick="prevPage()">⬅</div>
+        <div class="arrow" onclick="nextPage()">➡</div>
+      </div>
+    </div>
+    <div style="text-align:center;margin-top:15px">
+      <button onclick="closeBook()">Close Book 📕</button>
+    </div>
+  </div>
+</div>
+
 <script>
-const RI = {
-  Mafia:    {e:'🔪',c:'#c0392b',bg:'rgba(139,26,26,.3)'},
-  Doctor:   {e:'💊',c:'#27ae60',bg:'rgba(26,74,46,.3)'},
-  Detective:{e:'🔍',c:'#2980b9',bg:'rgba(26,42,74,.3)'},
-  Cupid:    {e:'💘',c:'#c0392b',bg:'rgba(120,26,60,.3)'},
-  Jester:   {e:'🃏',c:'#d35400',bg:'rgba(120,60,0,.3)'},
-  Villager: {e:'🏘️',c:'#7f8c8d',bg:'rgba(50,50,60,.3)'},
-};
-const RDESC = {
-  Mafia:'Each night, eliminate a villager. Win when Mafia equal or outnumber the town.',
-  Doctor:'Each night, protect one player from death. You may protect yourself.',
-  Detective:'Each night, investigate someone to learn if they are Mafia.',
-  Cupid:'Tonight only: link two souls as lovers. If one dies, the other follows.',
-  Jester:'Win by being voted out during the day. Be suspicious, not obvious.',
-  Villager:'Find and vote out the Mafia before they take over the village.',
-};
-
-let S = {
-  screen:'welcome', playerName:'', isHost:false, roomCode:'',
-  peer:null, conn:null, conns:{},
-  lobbyPlayers:[], settings:{mafia:1,doctor:1,detective:1,cupid:0,jester:0},
-  myRole:null, myId:null,
-  phase:null, players:[], nightNumber:1, narration:'', loading:false,
-  nightDead:[], votedOut:null, winner:null,
-  nightActionType:null, nightActionTargets:[], nightActionResult:null,
-  cupidPick:[], _detTarget:null,
-  _nightQueue:[], nightActions:{}, lovers:[], voteData:{},
-  _rolesReady:0, error:'',
-};
-
-// ─── RENDER ──────────────────────────────────────────────────────────────────
-function render() {
-  const app = document.getElementById('app');
-  app.innerHTML = screens();
-  bind();
+/* CONFETTI */
+const confetti=document.getElementById("confetti");
+for(let i=0;i<120;i++){
+  const s=document.createElement("span");
+  s.style.left=Math.random()*100+"vw";
+  s.style.animationDuration=3+Math.random()*5+"s";
+  s.style.setProperty("--h",Math.random()*360);
+  confetti.appendChild(s);
 }
 
-function screens() {
-  if (S.screen==='welcome') return welcome();
-  if (S.screen==='name')    return nameScreen();
-  if (S.screen==='mode')    return mode();
-  if (S.screen==='join')    return joinInput();
-  if (S.screen==='lobby')   return lobby();
-  if (S.screen==='game')    return gameScreen();
-  return '';
+/* STEPS */
+let step=0;
+const steps=document.querySelectorAll(".step");
+function nextStep(){
+  steps[step].classList.remove("active");
+  step++;
+  if(step<steps.length)steps[step].classList.add("active");
+}
+function toggleMode(){document.body.classList.toggle("night")}
+
+/* ===== IMPROVED DRAG & DROP PUZZLE ===== */
+const piecesBox=document.getElementById("pieces");
+const board=document.getElementById("board");
+const puzzleMsg=document.getElementById("puzzleMsg");
+let activePiece=null;
+let placed=0;
+const slots=[];
+let offsetX=0, offsetY=0;
+
+// Create slots
+for(let i=0;i<9;i++){
+  const s=document.createElement("div");
+  s.className="slot";
+  s.dataset.index=i;
+  board.appendChild(s);
+  slots.push(s);
 }
 
-function welcome() {
-  return `<div class="page fade">
-    <div style="text-align:center;padding:0 24px;max-width:420px;">
-      <div style="font-size:56px;margin-bottom:20px;" class="candle">🕯️</div>
-      <h1>MAFIA</h1>
-      <p class="sub" style="margin-top:10px;max-width:300px;margin-left:auto;margin-right:auto;">
-        In a village of secrets, trust no one.<br>The night always takes someone.
-      </p>
-      <div style="max-width:260px;margin:0 auto;">
-        <button class="btn" id="goBtnStart">⚡ START THE GAME</button>
-      </div>
-    </div>
-  </div>`;
+// Create pieces
+const indices=[...Array(9).keys()].sort(()=>Math.random()-.5);
+indices.forEach(i=>{
+  const p=document.createElement("div");
+  p.className="piece";
+  p.dataset.index=i;
+  const col=i%3;
+  const row=Math.floor(i/3);
+  p.style.backgroundPosition=`-${col*100}px -${row*100}px`;
+
+  // Mouse events
+  p.addEventListener("mousedown",startDrag);
+  
+  // Touch events
+  p.addEventListener("touchstart",startDrag);
+
+  piecesBox.appendChild(p);
+});
+
+function startDrag(e){
+  const piece=e.target;
+  if(piece.classList.contains("locked")) return;
+  
+  e.preventDefault();
+  activePiece=piece;
+  
+  const rect=piece.getBoundingClientRect();
+  const clientX=e.type.includes("touch")?e.touches[0].clientX:e.clientX;
+  const clientY=e.type.includes("touch")?e.touches[0].clientY:e.clientY;
+  
+  offsetX=clientX-rect.left;
+  offsetY=clientY-rect.top;
+  
+  piece.classList.add("dragging");
+  
+  // Position the piece at cursor/touch
+  movePiece(e);
 }
 
-function nameScreen() {
-  const fromLink = !!new URLSearchParams(window.location.search).get('room');
-  return `<div class="page fade">
-    <div class="card" style="max-width:360px;">
-      <div style="text-align:center;margin-bottom:22px;">
-        <div style="font-size:38px;margin-bottom:10px;">📜</div>
-        <h2>Who Are You?</h2>
-        <p class="sub" style="margin-bottom:0;font-size:15px;">Enter your name to take a seat at the table</p>
-      </div>
-      ${S.error?`<div class="alert err">${S.error}</div>`:''}
-      <input type="text" id="inp-name" placeholder="Your name…" value="${S.playerName}" maxlength="18" autocomplete="off">
-      <button class="btn" id="goBtnNameNext">TAKE MY SEAT →</button>
-      ${!fromLink?`<button class="btn ghost" id="goBtnBackWelcome">← Back</button>`:''}
-    </div>
-  </div>`;
+function movePiece(e){
+  if(!activePiece) return;
+  
+  const clientX=e.type.includes("touch")?e.touches[0].clientX:e.clientX;
+  const clientY=e.type.includes("touch")?e.touches[0].clientY:e.clientY;
+  
+  activePiece.style.left=(clientX-offsetX)+"px";
+  activePiece.style.top=(clientY-offsetY)+"px";
+  
+  // Highlight matching slot
+  slots.forEach(s=>s.classList.remove("highlight"));
+  const matchingSlot=findMatchingSlot(clientX, clientY);
+  if(matchingSlot && matchingSlot.dataset.index===activePiece.dataset.index){
+    matchingSlot.classList.add("highlight");
+  }
 }
 
-function mode() {
-  return `<div class="page fade">
-    <div class="card" style="max-width:380px;">
-      <div style="text-align:center;margin-bottom:26px;">
-        <div style="font-size:38px;margin-bottom:10px;">🏚️</div>
-        <h2>The Village</h2>
-        <p class="sub" style="margin-bottom:0;font-size:15px;">
-          Welcome, <strong style="color:var(--gold)">${esc(S.playerName)}</strong>. What brings you here?
-        </p>
-      </div>
-      <button class="btn" id="goBtnCreate">🏠 CREATE A ROOM</button>
-      <div class="divider"></div>
-      <button class="btn ghost" id="goBtnJoin">🚪 JOIN A ROOM</button>
-    </div>
-  </div>`;
+function endDrag(e){
+  if(!activePiece) return;
+  
+  const piece=activePiece;
+  piece.classList.remove("dragging");
+  
+  const clientX=e.type.includes("touch")?e.changedTouches[0].clientX:e.clientX;
+  const clientY=e.type.includes("touch")?e.changedTouches[0].clientY:e.clientY;
+  
+  const targetSlot=findMatchingSlot(clientX, clientY);
+  
+  // Reset position
+  piece.style.left="";
+  piece.style.top="";
+  
+  // Remove all highlights
+  slots.forEach(s=>s.classList.remove("highlight"));
+  
+  // Check if piece matches the slot
+  if(targetSlot && targetSlot.dataset.index===piece.dataset.index){
+    targetSlot.appendChild(piece);
+    piece.classList.add("locked");
+    placed++;
+    
+    if(placed===9){
+      puzzleMsg.textContent="Perfect 🐼💙";
+      setTimeout(nextStep,1500);
+    }
+  }
+  
+  activePiece=null;
 }
 
-function joinInput() {
-  const code = S.roomCode || '';
-  return `<div class="page fade">
-    <div class="card" style="max-width:360px;">
-      <div style="text-align:center;margin-bottom:22px;">
-        <div style="font-size:38px;margin-bottom:10px;">🚪</div>
-        <h2>Join a Room</h2>
-        <p class="sub" style="margin-bottom:0;font-size:15px;">Enter the room code from the host</p>
-      </div>
-      ${S.error?`<div class="alert err">${S.error}</div>`:''}
-      <input type="text" id="inp-code" placeholder="ROOM CODE" value="${code}"
-        maxlength="6" autocomplete="off"
-        style="text-align:center;font-size:26px;letter-spacing:8px;text-transform:uppercase;">
-      ${S.loading
-        ?`<div style="text-align:center;padding:14px;"><span class="spin"></span> <span style="color:var(--muted);vertical-align:middle;margin-left:8px;">Connecting…</span></div>`
-        :`<button class="btn" id="goBtnJoinConnect">→ ENTER THE VILLAGE</button>`}
-      <button class="btn ghost" id="goBtnBackMode">← Back</button>
-    </div>
-  </div>`;
+function findMatchingSlot(x, y){
+  let bestSlot=null;
+  let minDist=Infinity;
+  
+  slots.forEach(slot=>{
+    if(slot.children.length>0) return; // Slot already filled
+    
+    const rect=slot.getBoundingClientRect();
+    const centerX=rect.left+rect.width/2;
+    const centerY=rect.top+rect.height/2;
+    const dist=Math.hypot(x-centerX, y-centerY);
+    
+    if(dist<minDist && dist<100){
+      minDist=dist;
+      bestSlot=slot;
+    }
+  });
+  
+  return bestSlot;
 }
 
-function lobby() {
-  const players = S.lobbyPlayers;
-  const link = `${location.origin}${location.pathname}?room=${S.roomCode}`;
-  return `<div class="page fade">
-    <div class="card">
-      <div style="text-align:center;margin-bottom:18px;">
-        <div style="font-size:34px;margin-bottom:8px;">🏚️</div>
-        <h2>The Tavern</h2>
-        <p style="font-size:11px;letter-spacing:3px;color:var(--muted);margin-bottom:2px;">
-          ${S.isHost?'YOU ARE THE INNKEEPER':'WAITING FOR INNKEEPER TO START'}
-        </p>
-      </div>
+// Global event listeners
+document.addEventListener("mousemove",movePiece);
+document.addEventListener("mouseup",endDrag);
+document.addEventListener("touchmove",movePiece,{passive:false});
+document.addEventListener("touchend",endDrag);
 
-      <div class="code-wrap">
-        <div class="code-lbl">Room Code</div>
-        <div class="code-val">${S.roomCode}</div>
-      </div>
-
-      <div class="link-row">
-        <span>${link}</span>
-        <button id="goBtnCopyLink">COPY</button>
-      </div>
-
-      <div class="divider"></div>
-      <h3>👥 PLAYERS (${players.length})</h3>
-      ${players.map(p=>`
-        <div class="player-row">
-          <div class="dot${p.connected===false?' off':''}"></div>
-          <span style="flex:1;font-size:17px;">${esc(p.name)}</span>
-          ${p.isHost?'<span style="color:var(--amber);font-size:13px;">👑 HOST</span>':''}
-        </div>`).join('')}
-
-      ${players.length<4?`<div class="alert info" style="margin-top:10px;">Need ${4-players.length} more player${4-players.length!==1?'s':''} to start.</div>`:''}
-
-      ${S.isHost?`
-        <div class="divider"></div>
-        <h3>⚙️ ROLES</h3>
-        <div style="margin-bottom:18px;">
-          ${['mafia','doctor','detective','cupid','jester'].map(r=>`
-          <div class="setting-row">
-            <span style="font-size:15px;color:var(--muted);">${RI[cap(r)]?.e} ${cap(r)}</span>
-            <div class="counter">
-              <button onclick="adjSetting('${r}',-1)">−</button>
-              <span id="sval-${r}">${S.settings[r]}</span>
-              <button onclick="adjSetting('${r}',1)">+</button>
-            </div>
-          </div>`).join('')}
-        </div>
-        ${S.error?`<div class="alert err">${S.error}</div>`:''}
-        <button class="btn" id="goBtnHostStart" ${players.length<4?'disabled':''}>🕯️ BEGIN THE NIGHT</button>
-      `:`
-        <div class="divider"></div>
-        <div style="text-align:center;padding:12px 0;">
-          <span class="spin"></span>
-          <p style="color:var(--muted);margin-top:12px;font-style:italic;">The innkeeper prepares the roles…</p>
-        </div>
-      `}
-    </div>
-  </div>`;
-}
-
-function gameScreen() {
-  if (S.phase==='roleReveal')   return roleReveal();
-  if (S.phase==='night')        return nightWait();
-  if (S.phase==='nightAction')  return nightAction();
-  if (S.phase==='day')          return dayPhase();
-  if (S.phase==='vote')         return votePh();
-  if (S.phase==='voteResult')   return voteResult();
-  if (S.phase==='over')         return gameOver();
-  return `<div class="page"><div class="card"><div style="text-align:center"><span class="spin"></span></div></div></div>`;
-}
-
-function roleReveal() {
-  const r = S.myRole; const ri = RI[r]||RI.Villager;
-  const mafPals = S.players.filter(p=>p.role==='Mafia'&&p.id!==S.myId);
-  return `<div class="page fade">
-    <div class="card" style="text-align:center;">
-      <p style="font-size:11px;letter-spacing:3px;color:var(--muted);margin-bottom:14px;">YOUR SECRET ROLE</p>
-      <div style="font-size:68px;margin-bottom:14px;">${ri.e}</div>
-      <div style="margin-bottom:18px;">
-        <span class="tag" style="background:${ri.bg};border:1px solid ${ri.c};color:${ri.c};">${r.toUpperCase()}</span>
-      </div>
-      <p class="italic" style="margin-bottom:18px;">${RDESC[r]||''}</p>
-      ${r==='Mafia'&&mafPals.length>0?`
-        <div style="background:rgba(139,26,26,.2);border:1px solid rgba(192,57,43,.3);border-radius:3px;padding:12px;margin-bottom:18px;">
-          <p style="font-size:11px;letter-spacing:2px;color:#e74c3c;margin-bottom:8px;">YOUR MAFIA ALLIES:</p>
-          ${mafPals.map(p=>`<p style="font-size:16px;">🔪 ${esc(p.name)}</p>`).join('')}
-        </div>`:''}
-      <p style="font-size:11px;color:var(--muted);letter-spacing:1px;margin-bottom:14px;">🤫 KEEP THIS SECRET</p>
-      <button class="btn" id="goBtnRoleReady">I UNDERSTAND MY ROLE →</button>
-    </div>
-  </div>`;
-}
-
-function nightWait() {
-  return `<div class="page fade">
-    <div class="card" style="text-align:center;">
-      <div style="font-size:52px;margin-bottom:14px;" class="candle">🌑</div>
-      <h2>Night ${S.nightNumber}</h2>
-      <p class="italic" style="margin-bottom:20px;">
-        ${S.loading?'<span class="spin"></span>':S.narration?`❝${S.narration}❞`:'The village falls into a deep silence…'}
-      </p>
-      <div class="divider"></div>
-      <p style="font-size:12px;letter-spacing:2px;color:var(--muted);">THE VILLAGE SLEEPS…</p>
-      <p style="font-size:14px;color:var(--muted);margin-top:10px;font-style:italic;">Those with special roles are being called upon.</p>
-    </div>
-  </div>`;
-}
-
-function nightAction() {
-  const type=S.nightActionType, targets=S.nightActionTargets, res=S.nightActionResult;
-  const info = {
-    'mafia-kill':   {icon:'🔪', title:'MAFIA AWAKENS',       inst:'Choose your victim for tonight:'},
-    'doctor-protect':{icon:'💊',title:'DOCTOR AWAKENS',      inst:'Who will you protect tonight?'},
-    'detective-investigate':{icon:'🔍',title:'DETECTIVE AWAKENS',inst:'Investigate someone:'},
-    'cupid-link':   {icon:'💘', title:'CUPID AWAKENS',       inst:`Link two souls as lovers (${S.cupidPick.length}/2):`},
+/* MATCH GAME */
+const match=document.getElementById("match");
+const emojis=["🐼","🐼","💖","💖","✨","✨","🎀","🎀","🌙","🌙","⭐","⭐","🎈","🎈","🍰","🍰"];
+let flipped=[],matched=0;
+emojis.sort(()=>Math.random()-.5).forEach(e=>{
+  const c=document.createElement("div");
+  c.className="cardm";
+  c.textContent="❓";
+  c.onclick=()=>{
+    if(flipped.length<2&&c.textContent==="❓"){
+      c.textContent=e;
+      flipped.push({c,e});
+      if(flipped.length===2){
+        if(flipped[0].e===flipped[1].e){
+          matched+=2;flipped=[];
+          if(matched===emojis.length)setTimeout(nextStep,600);
+        }else{
+          setTimeout(()=>{flipped.forEach(x=>x.c.textContent="❓");flipped=[]},600);
+        }
+      }
+    }
   };
-  const {icon,title,inst}=info[type]||{icon:'❓',title:'',inst:''};
-  return `<div class="page fade">
-    <div class="card">
-      <div style="text-align:center;margin-bottom:18px;">
-        <div style="font-size:46px;margin-bottom:10px;">${icon}</div>
-        <p style="font-size:11px;letter-spacing:3px;color:var(--amber);margin-bottom:6px;">${title}</p>
-        <p class="italic">${inst}</p>
-      </div>
-      ${type==='detective-investigate'&&res!==null?`
-        <div style="text-align:center;padding:18px 0;">
-          <div style="font-size:42px;margin-bottom:10px;">${res?'🔴':'🟢'}</div>
-          <p style="font-size:18px;font-weight:600;color:${res?'#e74c3c':'#2ecc71'}">
-            ${esc(S._detName||'')} is ${res?'MAFIA!':'not Mafia.'}
-          </p>
-          <p style="color:var(--muted);font-size:14px;margin-top:8px;font-style:italic;">Your knowledge, your burden.</p>
-          <button class="btn" id="goBtnDetConfirm" style="max-width:260px;margin:18px auto 0;">Understood →</button>
-        </div>
-      `:`
-        ${targets.map(p=>`
-          <button class="target-btn${type==='cupid-link'&&S.cupidPick.includes(p.id)?' sel':''}" data-act-id="${p.id}">
-            ${type==='cupid-link'?(S.cupidPick.includes(p.id)?'❤️':'○'):'○'} ${esc(p.name)}
-          </button>`).join('')}
-        ${type==='cupid-link'&&S.cupidPick.length===2?`<button class="btn" id="goBtnCupidConfirm" style="margin-top:8px;">💘 LINK THESE SOULS →</button>`:''}
-      `}
-    </div>
-  </div>`;
-}
+  match.appendChild(c);
+});
 
-function dayPhase() {
-  const alive=S.players.filter(p=>p.alive);
-  return `<div class="page fade">
-    <div class="card">
-      <div style="text-align:center;margin-bottom:14px;">
-        <div style="font-size:46px;margin-bottom:8px;">☀️</div>
-        <h2>Day ${S.nightNumber}</h2>
-        <p class="italic">${S.loading?'<span class="spin"></span>':S.narration?`❝${S.narration}❞`:''}</p>
-      </div>
-
-      ${S.nightDead.length>0?`
-        <div style="background:rgba(139,26,26,.2);border:1px solid rgba(192,57,43,.3);border-radius:3px;padding:12px;margin-bottom:14px;">
-          <p style="font-size:11px;letter-spacing:2px;color:#e74c3c;margin-bottom:8px;">⚰️ FOUND DEAD AT DAWN:</p>
-          ${S.nightDead.map(d=>`
-            <div style="display:flex;justify-content:space-between;align-items:center;padding:3px 0;">
-              <span>${esc(d.name)}</span>
-              <span style="font-size:13px;color:var(--muted);">was ${d.role||'unknown'}</span>
-            </div>`).join('')}
-        </div>`
-      :`<div class="alert ok" style="margin-bottom:14px;">😌 No one died last night.</div>`}
-
-      <div style="background:rgba(0,0,0,.22);border:1px solid rgba(212,138,28,.12);border-radius:3px;padding:12px;margin-bottom:18px;">
-        <p style="font-size:11px;letter-spacing:2px;color:var(--muted);margin-bottom:8px;">STILL ALIVE</p>
-        <div style="display:flex;flex-wrap:wrap;gap:6px;">
-          ${alive.map(p=>`<span style="background:rgba(255,255,255,.07);border-radius:3px;padding:4px 12px;font-size:14px;">${esc(p.name)}</span>`).join('')}
-        </div>
-      </div>
-      <p class="italic" style="text-align:center;font-size:14px;letter-spacing:1px;margin-bottom:16px;">Discuss amongst yourselves. Find the killer.</p>
-      ${S.isHost
-        ?`<button class="btn" id="goBtnBeginVote" ${S.loading?'disabled':''}>🗳️ BEGIN VOTING</button>`
-        :`<div style="text-align:center;padding:8px 0;"><span class="spin"></span><p style="color:var(--muted);margin-top:10px;font-style:italic;">Waiting for the innkeeper to begin voting…</p></div>`}
-    </div>
-  </div>`;
-}
-
-function votePh() {
-  const myVote = S.voteData[S.myId];
-  const alive=S.players.filter(p=>p.alive&&p.id!==S.myId);
-  if (myVote!==undefined) {
-    const tv=S.players.find(p=>p.id===myVote);
-    return `<div class="page fade"><div class="card" style="text-align:center;">
-      <div style="font-size:46px;margin-bottom:12px;">🗳️</div>
-      <h2>Vote Cast</h2>
-      <p class="italic">You voted for <strong style="color:var(--gold)">${tv?esc(tv.name):'abstain'}</strong>.</p>
-      <div class="divider"></div>
-      <span class="spin"></span>
-      <p style="color:var(--muted);margin-top:12px;font-style:italic;">Waiting for all players to vote…</p>
-    </div></div>`;
-  }
-  return `<div class="page fade"><div class="card">
-    <div style="text-align:center;margin-bottom:18px;">
-      <div style="font-size:46px;margin-bottom:10px;">⚖️</div>
-      <h2>Cast Your Vote</h2>
-      <p class="italic">Who among you hides in shadow?</p>
-    </div>
-    ${alive.map(p=>`<button class="target-btn vote-btn" data-vote-id="${p.id}">${esc(p.name)}</button>`).join('')}
-    <div class="divider"></div>
-    <button class="target-btn vote-btn" data-vote-id="__skip__" style="text-align:center;color:var(--muted);">○ Abstain</button>
-  </div></div>`;
-}
-
-function voteResult() {
-  const v=S.votedOut;
-  return `<div class="page fade"><div class="card" style="text-align:center;">
-    <div style="font-size:52px;margin-bottom:12px;">${v?'⚖️':'🤷'}</div>
-    <h2>${v?`${esc(v.name)} Eliminated!`:'Tied Vote'}</h2>
-    ${v?`<p style="color:${RI[v.role]?.c||'#888'};font-size:17px;margin:8px 0 16px;">${RI[v.role]?.e} They were a <strong>${v.role}</strong></p>`:''}
-    <p class="italic" style="margin-bottom:20px;">${S.loading?'<span class="spin"></span>':S.narration?`❝${S.narration}❞`:''}</p>
-    ${!S.loading&&!S.winner?`<button class="btn" id="goBtnNextNight">🌑 BEGIN NIGHT ${S.nightNumber+1}</button>`:''}
-  </div></div>`;
-}
-
-function gameOver() {
-  const wc={Town:'#27ae60',Mafia:'#c0392b',Jester:'#d35400'};
-  const we={Town:'🏘️',Mafia:'🔪',Jester:'🃏'};
-  return `<div class="page fade">
-    <div class="card" style="text-align:center;">
-      <div style="font-size:68px;margin-bottom:12px;">${we[S.winner]||'🏘️'}</div>
-      <h1 style="color:${wc[S.winner]||'#888'};font-size:28px;margin-bottom:14px;">${S.winner} Wins!</h1>
-      <p class="italic" style="margin-bottom:20px;">${S.loading?'<span class="spin"></span>':S.narration?`❝${S.narration}❞`:''}</p>
-      ${S.players.length>0?`
-        <div class="divider"></div>
-        <p style="font-size:11px;letter-spacing:2px;color:var(--muted);margin-bottom:10px;">FINAL ROLES REVEALED</p>
-        ${S.players.map(p=>`
-          <div class="player-row ${p.alive?'':'dead-row'}">
-            <span style="flex:1;">${esc(p.name)}${p.alive?'':' ☠️'}</span>
-            <span style="color:${RI[p.role]?.c||'#888'};font-size:14px;">${RI[p.role]?.e||''} ${p.role||'?'}</span>
-          </div>`).join('')}
-      `:''}
-      <div class="divider"></div>
-      <button class="btn" id="goBtnPlayAgain">🔄 PLAY AGAIN</button>
-    </div>
-  </div>`;
-}
-
-// ─── BIND ─────────────────────────────────────────────────────────────────────
-function bind() {
-  const on=(id,fn)=>{const el=document.getElementById(id);if(el)el.addEventListener('click',fn);};
-  on('goBtnStart',()=>{S.screen='name';S.error='';render();});
-  on('goBtnBackWelcome',()=>{S.screen='welcome';render();});
-  on('goBtnNameNext',()=>{
-    const v=document.getElementById('inp-name')?.value.trim();
-    if(!v){S.error='Please enter your name.';render();return;}
-    S.playerName=v;S.error='';
-    const fromLink=new URLSearchParams(location.search).get('room');
-    if(fromLink){S.roomCode=fromLink.toUpperCase();S.screen='join';}
-    else S.screen='mode';
-    render();
-  });
-  on('goBtnBackMode',()=>{S.screen='mode';S.error='';render();});
-  on('goBtnCreate',createRoom);
-  on('goBtnJoin',()=>{S.screen='join';S.error='';render();});
-  on('goBtnJoinConnect',doJoin);
-  on('goBtnCopyLink',()=>{
-    const link=`${location.origin}${location.pathname}?room=${S.roomCode}`;
-    navigator.clipboard.writeText(link).then(()=>{
-      const b=document.getElementById('goBtnCopyLink');
-      if(b){b.textContent='✓ COPIED';setTimeout(()=>{const bb=document.getElementById('goBtnCopyLink');if(bb)bb.textContent='COPY';},2000);}
-    }).catch(()=>{
-      prompt('Copy this link:',link);
-    });
-  });
-  on('goBtnHostStart',hostStartGame);
-  on('goBtnRoleReady',()=>{
-    if(S.isHost){
-      S._rolesReady=(S._rolesReady||0)+1;
-      S.phase='night';S.loading=true;render();
-      checkAllRolesReady();
-    } else {
-      S.conn.send({type:'role-seen'});
-      S.phase='night';S.loading=true;render();
-    }
-  });
-  on('goBtnDetConfirm',()=>{
-    sendNightAction(S.nightActionType,S._detTarget);
-  });
-  on('goBtnCupidConfirm',()=>{
-    if(S.cupidPick.length===2) sendNightAction('cupid-link',S.cupidPick);
-  });
-  on('goBtnBeginVote',()=>{
-    if(S.isHost) hostBeginVoting();
-  });
-  on('goBtnNextNight',()=>{
-    if(S.isHost){S.nightNumber++;hostBeginNight();}
-    else{S.conn.send({type:'next-night'});S.phase='night';S.loading=true;render();}
-  });
-  on('goBtnPlayAgain',()=>{location.href=location.pathname;});
-
-  // Input enter
-  const ni=document.getElementById('inp-name');
-  if(ni){ni.addEventListener('keydown',e=>{if(e.key==='Enter')document.getElementById('goBtnNameNext')?.click();});setTimeout(()=>ni.focus(),60);}
-  const ci=document.getElementById('inp-code');
-  if(ci){ci.addEventListener('keydown',e=>{if(e.key==='Enter')document.getElementById('goBtnJoinConnect')?.click();});
-    ci.addEventListener('input',e=>{e.target.value=e.target.value.toUpperCase();});
-    setTimeout(()=>ci.focus(),60);}
-
-  // Night action targets
-  document.querySelectorAll('[data-act-id]').forEach(btn=>{
-    btn.addEventListener('click',()=>{
-      const id=btn.dataset.actId;
-      if(S.nightActionType==='cupid-link'){
-        if(S.cupidPick.includes(id)) S.cupidPick=S.cupidPick.filter(x=>x!==id);
-        else if(S.cupidPick.length<2) S.cupidPick.push(id);
-        render();
-      } else if(S.nightActionType==='detective-investigate'){
-        const t=S.nightActionTargets.find(p=>p.id===id);
-        S.nightActionResult=t?.isMafia||false;
-        S._detName=t?.name||'';
-        S._detTarget=id;
-        render();
-      } else {
-        sendNightAction(S.nightActionType,id);
-      }
-    });
-  });
-
-  // Vote buttons
-  document.querySelectorAll('[data-vote-id]').forEach(btn=>{
-    btn.addEventListener('click',()=>{
-      const id=btn.dataset.voteId==='__skip__'?null:btn.dataset.voteId;
-      submitVote(id);
-    });
-  });
-}
-
-window.adjSetting=function(role,d){
-  S.settings[role]=Math.max(role==='mafia'?1:0,S.settings[role]+d);
-  const el=document.getElementById('sval-'+role);
-  if(el)el.textContent=S.settings[role];
-  if(S.isHost)broadcastLobby();
-};
-
-// ─── PEER / NETWORK ───────────────────────────────────────────────────────────
-function genCode(){
-  const c='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-  let s='';for(let i=0;i<6;i++)s+=c[Math.floor(Math.random()*c.length)];return s;
-}
-
-function createRoom(){
-  const code=genCode();
-  S.roomCode=code;S.isHost=true;S.myId='host';
-  history.replaceState(null,'',location.pathname+'?room='+code);
-  S.peer=new Peer('maf-'+code.toLowerCase());
-  S.peer.on('open',()=>{
-    S.lobbyPlayers=[{id:'host',name:S.playerName,isHost:true,connected:true}];
-    S.screen='lobby';render();
-  });
-  S.peer.on('error',err=>{
-    if(err.type==='unavailable-id'){S.peer.destroy();createRoom();return;}
-    S.error='Connection error: '+err.message;render();
-  });
-  S.peer.on('connection',conn=>{
-    conn.on('open',()=>{
-      conn.on('data',msg=>hostOnMsg(conn,msg));
-      conn.on('close',()=>{
-        const p=S.lobbyPlayers.find(x=>x.id===conn.peer);
-        if(p)p.connected=false;
-        delete S.conns[conn.peer];
-        if(S.screen==='lobby')render();
-      });
-    });
-  });
-}
-
-function doJoin(){
-  const code=(document.getElementById('inp-code')?.value||'').trim().toUpperCase();
-  if(!code||code.length<4){S.error='Please enter a valid room code.';render();return;}
-  S.roomCode=code;S.isHost=false;S.loading=true;S.error='';render();
-  S.peer=new Peer();
-  S.peer.on('open',()=>{
-    S.myId=S.peer.id;
-    S.conn=S.peer.connect('maf-'+code.toLowerCase(),{reliable:true});
-    S.conn.on('open',()=>{
-      S.loading=false;
-      S.conn.send({type:'join',name:S.playerName});
-      S.screen='lobby';render();
-    });
-    S.conn.on('data',msg=>guestOnMsg(msg));
-    S.conn.on('close',()=>{
-      if(S.phase!=='over'){S.error='Lost connection to host.';S.screen='join';S.loading=false;render();}
-    });
-    S.conn.on('error',()=>{S.error='Could not connect. Check the room code.';S.loading=false;S.screen='join';render();});
-  });
-  S.peer.on('error',err=>{S.error='Connection failed: '+err.message;S.loading=false;S.screen='join';render();});
-}
-
-function broadcast(msg){Object.values(S.conns).forEach(c=>{try{c.send(msg);}catch(e){}});}
-function broadcastLobby(){broadcast({type:'lobby',players:S.lobbyPlayers,settings:S.settings});}
-
-// ─── HOST MSG ─────────────────────────────────────────────────────────────────
-function hostOnMsg(conn,msg){
-  if(msg.type==='join'){
-    const id=conn.peer;
-    S.conns[id]=conn;
-    const ex=S.lobbyPlayers.find(p=>p.id===id);
-    if(ex)ex.connected=true;
-    else S.lobbyPlayers.push({id,name:msg.name,isHost:false,connected:true});
-    broadcastLobby();render();
-  }
-  else if(msg.type==='role-seen'){
-    S._rolesReady=(S._rolesReady||0)+1;
-    checkAllRolesReady();
-  }
-  else if(msg.type==='night-action'){
-    hostProcessAction(conn.peer,msg.actionType,msg.target);
-  }
-  else if(msg.type==='vote'){
-    hostProcessVote(conn.peer,msg.targetId);
-  }
-  else if(msg.type==='next-night'){
-    // Handled by host button only
-  }
-}
-
-function checkAllRolesReady(){
-  if(S._rolesReady>=S.lobbyPlayers.length){
-    S._rolesReady=0;
-    hostBeginNight();
-  }
-}
-
-// ─── GUEST MSG ────────────────────────────────────────────────────────────────
-function guestOnMsg(msg){
-  if(msg.type==='lobby'){
-    S.lobbyPlayers=msg.players;S.settings=msg.settings;S.screen='lobby';render();
-  }
-  else if(msg.type==='game-start'){
-    S.myRole=msg.role;
-    S.players=msg.players;
-    S.phase='roleReveal';S.screen='game';render();
-  }
-  else if(msg.type==='night-start'){
-    S.phase='night';S.narration=msg.narration||'';S.loading=false;
-    S.nightNumber=msg.nightNumber||S.nightNumber;
-    S.nightActionType=null;S.nightActionResult=null;S.cupidPick=[];render();
-  }
-  else if(msg.type==='your-turn'){
-    S.phase='nightAction';S.nightActionType=msg.actionType;
-    S.nightActionTargets=msg.targets;S.nightActionResult=null;S.cupidPick=[];render();
-  }
-  else if(msg.type==='day-start'){
-    S.phase='day';S.nightDead=msg.dead;S.narration=msg.narration;
-    S.loading=false;S.players=msg.players;S.nightNumber=msg.nightNumber;render();
-  }
-  else if(msg.type==='vote-start'){
-    S.phase='vote';S.voteData={};S.players=msg.players;render();
-  }
-  else if(msg.type==='vote-result'){
-    S.phase='voteResult';S.votedOut=msg.eliminated;S.narration=msg.narration;
-    S.loading=false;S.players=msg.players;S.winner=msg.winner||null;render();
-  }
-  else if(msg.type==='game-over'){
-    S.phase='over';S.winner=msg.winner;S.narration=msg.narration;
-    S.loading=false;S.players=msg.players;S.screen='game';render();
-  }
-}
-
-// ─── GAME LOGIC (HOST) ────────────────────────────────────────────────────────
-async function hostStartGame(){
-  const pl=S.lobbyPlayers;
-  if(pl.length<4){S.error='Need at least 4 players!';render();return;}
-  const cfg=S.settings;
-  const spec=cfg.mafia+cfg.doctor+cfg.detective+cfg.cupid+cfg.jester;
-  if(spec>pl.length){S.error='Too many special roles for this player count!';render();return;}
-
-  const roles=[];
-  for(let i=0;i<cfg.mafia;i++)roles.push('Mafia');
-  if(cfg.doctor)roles.push('Doctor');
-  if(cfg.detective)roles.push('Detective');
-  if(cfg.cupid)roles.push('Cupid');
-  if(cfg.jester)roles.push('Jester');
-  while(roles.length<pl.length)roles.push('Villager');
-
-  const shuffled=shuffle(roles);
-  S.players=pl.map((p,i)=>({id:p.id,name:p.name,role:shuffled[i],alive:true}));
-  S.lovers=[];S.nightNumber=1;S.nightActions={};S._rolesReady=0;
-
-  // Send each player their role
-  S.players.forEach(player=>{
-    const mafPals=S.players.filter(p=>p.role==='Mafia'&&p.id!==player.id).map(p=>({id:p.id,name:p.name,role:'Mafia'}));
-    const visPlayers=S.players.map(p=>({
-      id:p.id,name:p.name,alive:p.alive,
-      role:(p.id===player.id||(player.role==='Mafia'&&p.role==='Mafia'))?p.role:undefined
-    }));
-    const gmsg={type:'game-start',role:player.role,players:visPlayers};
-    if(player.id==='host'){
-      S.myRole=player.role;S.screen='game';S.phase='roleReveal';
-    } else {
-      S.conns[player.id]?.send(gmsg);
-    }
-  });
-  render();
-}
-
-async function hostBeginNight(){
-  S.nightActions={};S._nightQ=null;S.phase='night';S.loading=true;render();
-  const t=await callGM(`Mafia Game Master. Night ${S.nightNumber} begins. One short chilling sentence about darkness falling on the village.`);
-  S._nightNarration=t;S.narration=t;S.loading=false;
-  broadcast({type:'night-start',narration:t,nightNumber:S.nightNumber});
-  render();
-  buildAndRunNightQueue();
-}
-
-function buildAndRunNightQueue(){
-  const alive=S.players.filter(p=>p.alive);
-  const q=[];
-  if(S.nightNumber===1){const c=alive.find(p=>p.role==='Cupid');if(c)q.push(c);}
-  // All alive Mafia (first one acts as speaker)
-  const mafia=alive.filter(p=>p.role==='Mafia');
-  if(mafia.length>0)q.push(mafia[0]);
-  const doc=alive.find(p=>p.role==='Doctor');if(doc)q.push(doc);
-  const det=alive.find(p=>p.role==='Detective');if(det)q.push(det);
-  S._nightQ=[...q];
-  runNextNightActor();
-}
-
-function runNextNightActor(){
-  if(!S._nightQ||S._nightQ.length===0){hostResolveNight();return;}
-  const actor=S._nightQ.shift();
-  S._curActor=actor;
-
-  const alive=S.players.filter(p=>p.alive);
-  const others=alive.filter(p=>p.id!==actor.id);
-
-  let actionType='';let targets=[];
-  if(actor.role==='Cupid'){
-    actionType='cupid-link';
-    targets=alive.map(p=>({id:p.id,name:p.name}));
-  }else if(actor.role==='Mafia'){
-    actionType='mafia-kill';
-    targets=others.filter(p=>p.role!=='Mafia').map(p=>({id:p.id,name:p.name}));
-  }else if(actor.role==='Doctor'){
-    actionType='doctor-protect';
-    targets=alive.map(p=>({id:p.id,name:p.name}));
-  }else if(actor.role==='Detective'){
-    actionType='detective-investigate';
-    targets=others.map(p=>({id:p.id,name:p.name,isMafia:p.role==='Mafia'}));
-  }
-
-  if(actor.id==='host'){
-    S.phase='nightAction';S.nightActionType=actionType;
-    S.nightActionTargets=targets;S.nightActionResult=null;S.cupidPick=[];render();
-  } else {
-    S.conns[actor.id]?.send({type:'your-turn',actionType,targets});
-    // Keep all others on night screen
-    S.phase='night';render();
-  }
-}
-
-function sendNightAction(actionType,target){
-  if(S.isHost){
-    hostProcessAction('host',actionType,target);
-    S.phase='night';render();
-  } else {
-    S.conn.send({type:'night-action',actionType,target});
-    S.phase='night';S.nightActionType=null;render();
-  }
-}
-
-function hostProcessAction(actorId,actionType,target){
-  if(actionType==='mafia-kill'){S.nightActions.mafiaTarget=target;}
-  else if(actionType==='doctor-protect'){S.nightActions.doctorTarget=target;}
-  else if(actionType==='detective-investigate'){S.nightActions.detectiveTarget=target;}
-  else if(actionType==='cupid-link'){
-    S.nightActions.cupidTargets=Array.isArray(target)?target:[target];
-    S.lovers=S.nightActions.cupidTargets;
-    S.players=S.players.map(p=>({...p,isLover:S.lovers.includes(p.id)}));
-  }
-  runNextNightActor();
-}
-
-async function hostResolveNight(){
-  const na=S.nightActions;
-  let dead=[];
-  if(na.mafiaTarget&&na.mafiaTarget!==na.doctorTarget){
-    const t=S.players.find(p=>p.id===na.mafiaTarget&&p.alive);
-    if(t)dead.push(t);
-  }
-  // Lover cascade
-  const seen=new Set(dead.map(d=>d.id));
-  let chg=true;
-  while(chg){chg=false;
-    [...dead].forEach(d=>{
-      if(S.lovers.includes(d.id)){
-        S.lovers.forEach(lid=>{
-          if(lid!==d.id&&!seen.has(lid)){
-            const p=S.players.find(x=>x.id===lid&&x.alive);
-            if(p){dead.push(p);seen.add(lid);chg=true;}
-          }
-        });
-      }
-    });
-  }
-  const deadSet=new Set(dead.map(d=>d.id));
-  S.players=S.players.map(p=>({...p,alive:deadSet.has(p.id)?false:p.alive}));
-  S.nightDead=dead;S.nightActions={};S.loading=true;render();
-
-  const w=checkWin(S.players);
-  const prompt=dead.length===0
-    ?`Mafia Game Master. Night ${S.nightNumber}: Doctor saved the target. One eerie sentence about a peaceful dawn.`
-    :`Mafia Game Master. Night ${S.nightNumber}: Found dead at dawn: ${dead.map(d=>d.name).join(', ')}. 2 atmospheric sentences.`;
-  const t=await callGM(prompt);
-  S.narration=t;S.loading=false;
-
-  if(w){await hostEndGame(w);return;}
-
-  const dayMsg={type:'day-start',dead:dead.map(d=>({id:d.id,name:d.name,role:d.role})),
-    narration:t,players:S.players.map(p=>({id:p.id,name:p.name,alive:p.alive})),nightNumber:S.nightNumber};
-  broadcast(dayMsg);
-  S.phase='day';render();
-}
-
-function hostBeginVoting(){
-  const alive=S.players.filter(p=>p.alive);
-  S.voteData={};S._voteExpected=alive.length;
-  broadcast({type:'vote-start',players:S.players.map(p=>({id:p.id,name:p.name,alive:p.alive}))});
-  S.phase='vote';render();
-}
-
-function submitVote(targetId){
-  S.voteData[S.myId]=targetId;render();
-  if(S.isHost)hostProcessVote('host',targetId);
-  else S.conn.send({type:'vote',targetId});
-}
-
-function hostProcessVote(voterId,targetId){
-  S.voteData[voterId]=targetId;
-  const alive=S.players.filter(p=>p.alive);
-  const cast=alive.filter(p=>S.voteData.hasOwnProperty(p.id)).length;
-  if(cast>=alive.length)hostResolveVote();
-}
-
-async function hostResolveVote(){
-  const alive=S.players.filter(p=>p.alive);
-  const counts={};
-  alive.forEach(p=>{const v=S.voteData[p.id];if(v)counts[v]=(counts[v]||0)+1;});
-  const sorted=Object.entries(counts).sort((a,b)=>b[1]-a[1]);
-  let elim=null;
-  if(sorted.length>0&&(sorted.length===1||sorted[0][1]>sorted[1][1])){
-    elim=S.players.find(p=>p.id===sorted[0][0]);
-  }
-  if(elim){
-    S.players=S.players.map(p=>({...p,alive:p.id===elim.id?false:p.alive}));
-    if(S.lovers.includes(elim.id)){
-      S.lovers.forEach(lid=>{if(lid!==elim.id)S.players=S.players.map(p=>({...p,alive:p.id===lid?false:p.alive}));});
-    }
-  }
-  S.votedOut=elim||null;S.loading=true;render();
-  const w=checkWin(S.players,elim);
-  const t=await callGM(elim
-    ?`Mafia game. Day vote: ${elim.name} (${elim.role}) was eliminated. 2 dramatic atmospheric sentences.`
-    :`Mafia game. Day vote tied — no elimination. One tense sentence about the unresolved tension.`);
-  S.narration=t;S.loading=false;
-  if(w){await hostEndGame(w);return;}
-  const msg={type:'vote-result',eliminated:elim?{id:elim.id,name:elim.name,role:elim.role}:null,
-    narration:t,players:S.players.map(p=>({id:p.id,name:p.name,alive:p.alive})),winner:null};
-  broadcast(msg);
-  S.phase='voteResult';render();
-}
-
-async function hostEndGame(winner){
-  S.winner=winner;S.loading=true;S.phase='over';render();
-  const t=await callGM(`Mafia party game: ${winner} won. 2 dramatic climactic sentences as the final announcement.`);
-  S.narration=t;S.loading=false;
-  broadcast({type:'game-over',winner,narration:t,players:S.players});
-  render();
-}
-
-// ─── HELPERS ──────────────────────────────────────────────────────────────────
-function checkWin(ps,elim=null){
-  if(elim?.role==='Jester')return'Jester';
-  const aM=ps.filter(p=>p.alive&&p.role==='Mafia').length;
-  const aT=ps.filter(p=>p.alive&&p.role!=='Mafia'&&p.role!=='Jester').length;
-  if(aM===0)return'Town';
-  if(aM>=aT)return'Mafia';
-  return null;
-}
-function shuffle(a){const b=[...a];for(let i=b.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]];}return b;}
-async function callGM(prompt){
-  try{
-    const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:200,messages:[{role:'user',content:prompt}]})});
-    const d=await r.json();return d.content[0].text;
-  }catch{return'The village stirs in uneasy silence…';}
-}
-function esc(s){return String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
-function cap(s){return s.charAt(0).toUpperCase()+s.slice(1);}
-
-// ─── INIT ──────────────────────────────────────────────────────────────────────
-const urlRoom=new URLSearchParams(location.search).get('room');
-if(urlRoom){S.roomCode=urlRoom.toUpperCase();S.screen='name';}
-render();
+/* BOOK */
+let index=0;
+const pages=document.getElementById("pages");
+function updatePage(){pages.style.transform=`translateX(-${index*100}%)`}
+function nextPage(){if(index>=pages.children.length-1){closeBook();return;}index++;updatePage()}
+function prevPage(){if(index>0){index--;updatePage()}}
+function openBook(){index=0;updatePage();document.getElementById("bookOverlay").classList.add("show")}
+function closeBook(){document.getElementById("bookOverlay").classList.remove("show");nextStep()}
 </script>
+
 </body>
 </html>
