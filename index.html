@@ -3,498 +3,1670 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-<title>MAFIA — The Village Awaits</title>
-<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Cinzel:wght@400;600&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/peerjs/1.5.4/peerjs.min.js"></script>
+<title>MAFIA</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Special+Elite&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#0a0805;--wood:#1c1208;--panel:#251a0d;--panel2:#2e2010;--amber:#d48a1c;--gold:#f0b840;--cream:#e8dcc8;--muted:#9a8a72;--red:#8b1a1a;--red2:#c0392b;--green:#1a4a2e;--green2:#27ae60;--blue:#1a2a4a;--radius:3px;}
-*{box-sizing:border-box;margin:0;padding:0;}
-html,body{height:100%;font-family:'Crimson Text',Georgia,serif;background:var(--bg);color:var(--cream);overflow-x:hidden;}
-body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse at 50% 100%,rgba(180,100,0,.12),transparent 65%);pointer-events:none;z-index:0;}
-#app{min-height:100vh;position:relative;z-index:1;}
-.page{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px;}
-.card{background:linear-gradient(160deg,var(--panel) 0%,var(--panel2) 50%,var(--panel) 100%);border:1px solid rgba(212,138,28,.28);border-radius:var(--radius);padding:28px 24px;width:100%;max-width:460px;box-shadow:0 24px 64px rgba(0,0,0,.9),inset 0 1px 0 rgba(240,184,64,.12);position:relative;overflow:hidden;}
-.card::after{content:'';position:absolute;inset:4px;border:1px solid rgba(212,138,28,.08);border-radius:2px;pointer-events:none;}
-h1{font-family:'Cinzel Decorative',serif;font-size:clamp(36px,10vw,58px);color:var(--gold);text-align:center;letter-spacing:4px;text-shadow:0 0 40px rgba(240,184,64,.5),0 2px 8px rgba(0,0,0,.9);margin-bottom:6px;}
-h2{font-family:'Cinzel',serif;font-size:clamp(18px,5vw,22px);color:var(--gold);text-align:center;letter-spacing:3px;margin-bottom:18px;}
-h3{font-family:'Cinzel',serif;font-size:14px;color:var(--amber);letter-spacing:2px;margin-bottom:12px;}
-.sub{text-align:center;color:var(--muted);font-style:italic;font-size:16px;margin-bottom:24px;line-height:1.65;}
-input[type=text],input[type=number]{width:100%;background:rgba(0,0,0,.45);border:1px solid rgba(212,138,28,.35);border-radius:var(--radius);color:var(--cream);font-family:'Crimson Text',serif;font-size:18px;padding:12px 14px;outline:none;transition:border-color .2s;margin-bottom:14px;}
-input::placeholder{color:rgba(200,184,152,.35);}
-input:focus{border-color:var(--amber);}
-.btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;background:linear-gradient(180deg,rgba(212,138,28,.18),rgba(100,65,8,.45));border:1px solid var(--amber);border-radius:var(--radius);color:var(--gold);font-family:'Cinzel',serif;font-size:13px;font-weight:600;letter-spacing:2px;padding:14px 20px;cursor:pointer;transition:all .2s;margin-bottom:10px;text-align:center;}
-.btn:hover:not(:disabled){background:linear-gradient(180deg,rgba(212,138,28,.38),rgba(180,115,18,.5));box-shadow:0 0 24px rgba(212,138,28,.28);}
-.btn:disabled{opacity:.35;cursor:not-allowed;}
-.btn.ghost{border-color:rgba(200,184,152,.25);color:var(--muted);background:rgba(0,0,0,.15);}
-.btn.ghost:hover:not(:disabled){border-color:rgba(200,184,152,.5);color:var(--cream);background:rgba(255,255,255,.06);}
-.btn.danger{border-color:var(--red2);color:#e74c3c;background:rgba(139,26,26,.15);}
-.btn.success{border-color:var(--green2);color:#2ecc71;background:rgba(26,74,46,.15);}
-.divider{height:1px;background:linear-gradient(90deg,transparent,rgba(212,138,28,.35),transparent);margin:18px 0;}
-.code-wrap{background:rgba(0,0,0,.5);border:1px solid rgba(212,138,28,.4);border-radius:var(--radius);padding:16px;text-align:center;margin-bottom:14px;}
-.code-lbl{font-size:11px;letter-spacing:3px;color:var(--muted);text-transform:uppercase;margin-bottom:6px;}
-.code-val{font-family:'Cinzel',serif;font-size:30px;letter-spacing:10px;color:var(--gold);text-shadow:0 0 20px rgba(240,184,64,.4);}
-.link-row{display:flex;gap:6px;align-items:center;background:rgba(0,0,0,.4);border:1px solid rgba(212,138,28,.2);border-radius:var(--radius);padding:9px 12px;margin-bottom:14px;}
-.link-row span{flex:1;font-size:12px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.link-row button{flex-shrink:0;background:rgba(212,138,28,.18);border:1px solid rgba(212,138,28,.4);border-radius:2px;color:var(--amber);font-family:'Cinzel',serif;font-size:11px;letter-spacing:1px;padding:5px 10px;cursor:pointer;transition:background .2s;}
-.link-row button:hover{background:rgba(212,138,28,.38);}
-.player-row{display:flex;align-items:center;gap:10px;padding:9px 12px;background:rgba(0,0,0,.22);border:1px solid rgba(212,138,28,.12);border-radius:var(--radius);margin-bottom:5px;font-size:16px;}
-.dot{width:8px;height:8px;border-radius:50%;background:#2ecc71;flex-shrink:0;}
-.dot.off{background:#e74c3c;}
-.setting-row{display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(212,138,28,.1);}
-.setting-row:last-child{border-bottom:none;}
-.counter{display:flex;align-items:center;gap:10px;}
-.counter button{width:28px;height:28px;background:rgba(212,138,28,.12);border:1px solid rgba(212,138,28,.35);border-radius:2px;color:var(--amber);font-size:17px;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1;transition:background .2s;}
-.counter button:hover{background:rgba(212,138,28,.3);}
-.counter span{color:var(--gold);font-family:'Cinzel',serif;font-size:17px;min-width:22px;text-align:center;}
-.target-btn{display:block;width:100%;background:rgba(0,0,0,.2);border:1px solid rgba(200,184,152,.18);border-radius:var(--radius);color:var(--cream);font-family:'Crimson Text',serif;font-size:17px;padding:11px 14px;cursor:pointer;text-align:left;transition:all .15s;margin-bottom:6px;}
-.target-btn:hover{background:rgba(212,138,28,.18);border-color:rgba(212,138,28,.5);}
-.target-btn.sel{background:rgba(212,138,28,.22);border-color:rgba(212,138,28,.7);}
-.italic{font-style:italic;color:var(--muted);line-height:1.7;font-size:16px;}
-.alert{padding:10px 14px;border-radius:var(--radius);margin-bottom:12px;font-size:15px;line-height:1.5;}
-.alert.err{background:rgba(139,26,26,.2);border:1px solid rgba(192,57,43,.4);color:#e74c3c;}
-.alert.info{background:rgba(26,50,74,.3);border:1px solid rgba(41,128,185,.35);color:#5dade2;}
-.alert.ok{background:rgba(26,74,46,.3);border:1px solid rgba(39,174,96,.35);color:#2ecc71;}
-.candle{display:inline-block;animation:flicker 3s infinite alternate;}
-@keyframes flicker{0%,100%{opacity:1}30%{opacity:.85}60%{opacity:.92}80%{opacity:.88}}
-.spin{display:inline-block;width:18px;height:18px;border:2px solid rgba(212,138,28,.25);border-top-color:var(--amber);border-radius:50%;animation:rot .7s linear infinite;vertical-align:middle;}
-@keyframes rot{to{transform:rotate(360deg)}}
-.fade{animation:fdin .35s ease;}
-@keyframes fdin{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
-.tag{display:inline-block;padding:4px 12px;border-radius:2px;font-family:'Cinzel',serif;font-size:13px;letter-spacing:1px;font-weight:600;}
-.dead-row{opacity:.3;}
+/* ══════════════════════════════════════════════
+   DESIGN SYSTEM — Noir Broadsheet
+   ══════════════════════════════════════════════ */
+:root {
+  --ink:       #0e0c0a;
+  --paper:     #f5f0e8;
+  --paper2:    #ede7d9;
+  --sepia:     #c8a96e;
+  --rust:      #8b3a2a;
+  --rust2:     #c0442b;
+  --navy:      #1a2744;
+  --navy2:     #243460;
+  --forest:    #1a3d2b;
+  --forest2:   #2a6040;
+  --muted:     #6b5d4a;
+  --border:    rgba(14,12,10,.15);
+  --border2:   rgba(14,12,10,.08);
+  --r:         2px;
+  --shadow:    0 2px 20px rgba(14,12,10,.12), 0 1px 4px rgba(14,12,10,.08);
+  --shadow-lg: 0 8px 40px rgba(14,12,10,.18), 0 2px 8px rgba(14,12,10,.1);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  height: 100%;
+  background: var(--ink);
+  color: var(--ink);
+  font-family: 'Libre Baskerville', Georgia, serif;
+  font-size: 15px;
+  line-height: 1.6;
+  overflow-x: hidden;
+}
+
+/* ── NOISE TEXTURE OVERLAY ── */
+body::after {
+  content: '';
+  position: fixed; inset: 0; pointer-events: none; z-index: 9999;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+  opacity: 0.35;
+}
+
+/* ── BG CANVAS ── */
+#bg-canvas { position: fixed; inset: 0; z-index: 0; }
+
+/* ── APP WRAPPER ── */
+#app { position: relative; z-index: 1; min-height: 100vh; }
+
+/* ── PAGE ── */
+.page {
+  min-height: 100vh;
+  display: flex; align-items: center; justify-content: center;
+  padding: 20px;
+  position: relative;
+}
+
+/* ══════════════════════════════════════════════
+   NEWSPAPER CARD
+   ══════════════════════════════════════════════ */
+.card {
+  background: var(--paper);
+  border: 1px solid rgba(14,12,10,.25);
+  border-radius: var(--r);
+  padding: 32px 28px;
+  width: 100%; max-width: 500px;
+  box-shadow: var(--shadow-lg);
+  position: relative;
+  overflow: hidden;
+}
+.card::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; height: 4px;
+  background: var(--ink);
+}
+.card::after {
+  content: '';
+  position: absolute; top: 4px; left: 0; right: 0; height: 2px;
+  background: repeating-linear-gradient(90deg, var(--sepia) 0, var(--sepia) 8px, transparent 8px, transparent 12px);
+  opacity: .5;
+}
+
+/* Ruled paper lines */
+.card-lined::before {
+  display: none;
+}
+.card-lined {
+  background-image: repeating-linear-gradient(
+    transparent,
+    transparent 27px,
+    rgba(14,12,10,.06) 27px,
+    rgba(14,12,10,.06) 28px
+  );
+}
+
+/* ══════════════════════════════════════════════
+   MASTHEAD / TYPOGRAPHY
+   ══════════════════════════════════════════════ */
+.masthead {
+  text-align: center;
+  border-bottom: 3px double var(--ink);
+  padding-bottom: 14px;
+  margin-bottom: 20px;
+}
+.masthead-title {
+  font-family: 'Playfair Display', serif;
+  font-weight: 900;
+  font-size: clamp(42px, 12vw, 72px);
+  letter-spacing: -1px;
+  line-height: 1;
+  color: var(--ink);
+  text-transform: uppercase;
+}
+.masthead-sub {
+  font-family: 'Special Elite', cursive;
+  font-size: 10px;
+  letter-spacing: 4px;
+  color: var(--muted);
+  text-transform: uppercase;
+  margin-top: 4px;
+}
+.masthead-rule {
+  display: flex; align-items: center; gap: 10px;
+  margin: 10px 0 4px;
+  font-family: 'Special Elite', cursive;
+  font-size: 9px; letter-spacing: 3px; color: var(--muted);
+  text-transform: uppercase;
+}
+.masthead-rule::before, .masthead-rule::after {
+  content: ''; flex: 1; height: 1px; background: var(--border);
+}
+
+.section-head {
+  font-family: 'Playfair Display', serif;
+  font-weight: 700;
+  font-size: 18px;
+  color: var(--ink);
+  border-bottom: 2px solid var(--ink);
+  padding-bottom: 4px;
+  margin-bottom: 14px;
+}
+.section-head.sm {
+  font-size: 13px;
+  font-family: 'Special Elite', cursive;
+  font-weight: 400;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  border-bottom: 1px solid var(--border);
+}
+
+h2 {
+  font-family: 'Playfair Display', serif;
+  font-weight: 700;
+  font-size: 22px;
+  color: var(--ink);
+  margin-bottom: 10px;
+}
+h3 {
+  font-family: 'Special Elite', cursive;
+  font-size: 11px;
+  letter-spacing: 3px;
+  color: var(--muted);
+  text-transform: uppercase;
+  margin-bottom: 12px;
+}
+
+.lede {
+  font-family: 'Libre Baskerville', serif;
+  font-style: italic;
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.7;
+  text-align: center;
+}
+
+/* ══════════════════════════════════════════════
+   INPUTS
+   ══════════════════════════════════════════════ */
+.field {
+  margin-bottom: 14px;
+}
+.field label {
+  display: block;
+  font-family: 'Special Elite', cursive;
+  font-size: 10px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 6px;
+}
+input[type=text] {
+  width: 100%;
+  background: white;
+  border: 1px solid var(--border);
+  border-bottom: 2px solid var(--ink);
+  border-radius: 0;
+  color: var(--ink);
+  font-family: 'Special Elite', cursive;
+  font-size: 16px;
+  padding: 10px 14px;
+  outline: none;
+  transition: border-color .2s, box-shadow .2s;
+  letter-spacing: 1px;
+}
+input[type=text]:focus {
+  border-color: var(--ink);
+  box-shadow: 0 2px 0 0 var(--ink);
+}
+input[type=text].code-input {
+  text-align: center;
+  font-size: 26px;
+  letter-spacing: 12px;
+  text-transform: uppercase;
+  font-family: 'Playfair Display', serif;
+  padding: 14px 20px;
+}
+input::placeholder { color: rgba(14,12,10,.25); letter-spacing: 1px; }
+
+/* ══════════════════════════════════════════════
+   BUTTONS
+   ══════════════════════════════════════════════ */
+.btn {
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  width: 100%;
+  background: var(--ink);
+  border: 2px solid var(--ink);
+  border-radius: var(--r);
+  color: var(--paper);
+  font-family: 'Special Elite', cursive;
+  font-size: 11px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  padding: 14px 20px;
+  cursor: pointer;
+  transition: all .2s;
+  margin-bottom: 10px;
+  position: relative;
+  overflow: hidden;
+}
+.btn::after {
+  content: '';
+  position: absolute; inset: 0;
+  background: white;
+  opacity: 0;
+  transition: opacity .15s;
+}
+.btn:hover:not(:disabled)::after { opacity: .08; }
+.btn:hover:not(:disabled) { transform: translateY(-1px); box-shadow: 0 4px 14px rgba(14,12,10,.25); }
+.btn:active:not(:disabled) { transform: translateY(0); }
+.btn:disabled { opacity: .35; cursor: not-allowed; }
+
+.btn.outline {
+  background: transparent;
+  color: var(--ink);
+}
+.btn.outline:hover:not(:disabled)::after { opacity: 0; }
+.btn.outline:hover:not(:disabled) { background: var(--ink); color: var(--paper); }
+
+.btn.danger {
+  background: var(--rust);
+  border-color: var(--rust);
+}
+.btn.success {
+  background: var(--forest);
+  border-color: var(--forest);
+}
+.btn.accent {
+  background: var(--navy);
+  border-color: var(--navy);
+}
+.btn.sm {
+  padding: 9px 14px;
+  font-size: 10px;
+  letter-spacing: 2px;
+  margin-bottom: 0;
+  width: auto;
+}
+
+/* ══════════════════════════════════════════════
+   DIVIDER
+   ══════════════════════════════════════════════ */
+.divider {
+  display: flex; align-items: center; gap: 10px;
+  margin: 18px 0;
+  color: var(--muted);
+  font-family: 'Special Elite', cursive;
+  font-size: 9px; letter-spacing: 3px; text-transform: uppercase;
+}
+.divider::before, .divider::after {
+  content: ''; flex: 1; height: 1px; background: var(--border);
+}
+.divider.heavy::before, .divider.heavy::after {
+  height: 2px;
+  background: var(--ink);
+}
+
+/* ══════════════════════════════════════════════
+   CODE DISPLAY
+   ══════════════════════════════════════════════ */
+.code-block {
+  background: var(--ink);
+  border-radius: var(--r);
+  padding: 18px 20px;
+  text-align: center;
+  margin-bottom: 14px;
+  position: relative;
+  overflow: hidden;
+}
+.code-block::before {
+  content: 'ROOM CODE';
+  display: block;
+  font-family: 'Special Elite', cursive;
+  font-size: 9px;
+  letter-spacing: 4px;
+  color: rgba(245,240,232,.4);
+  margin-bottom: 8px;
+}
+.code-val {
+  font-family: 'Playfair Display', serif;
+  font-size: 36px;
+  font-weight: 900;
+  letter-spacing: 14px;
+  color: var(--paper);
+  text-shadow: 0 0 20px rgba(200,169,110,.3);
+}
+
+/* ══════════════════════════════════════════════
+   PLAYER ROWS
+   ══════════════════════════════════════════════ */
+.player-list { margin-bottom: 4px; }
+.player-row {
+  display: flex; align-items: center; gap: 10px;
+  padding: 9px 12px;
+  border: 1px solid var(--border2);
+  border-bottom: 1px solid var(--border);
+  background: white;
+  font-size: 15px;
+  transition: all .3s;
+  animation: slideRow .35s ease both;
+}
+.player-row:first-child { border-radius: 2px 2px 0 0; }
+.player-row:last-child { border-radius: 0 0 2px 2px; }
+.player-row:only-child { border-radius: 2px; }
+.player-row + .player-row { border-top: none; }
+.player-row.dead { opacity: .3; text-decoration: line-through; }
+
+@keyframes slideRow {
+  from { opacity: 0; transform: translateX(-10px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+.status-dot {
+  width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0;
+}
+.status-dot.on  { background: var(--forest2); box-shadow: 0 0 6px rgba(42,96,64,.5); }
+.status-dot.off { background: var(--rust2); }
+
+.player-name { flex: 1; font-family: 'Libre Baskerville', serif; }
+.player-badge {
+  font-family: 'Special Elite', cursive;
+  font-size: 9px;
+  letter-spacing: 2px;
+  color: var(--muted);
+  text-transform: uppercase;
+  background: var(--paper2);
+  padding: 2px 7px;
+  border: 1px solid var(--border);
+  border-radius: 1px;
+}
+
+/* Speaking ring */
+.speak-dot {
+  width: 22px; height: 22px; border-radius: 50%;
+  border: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 10px;
+  transition: all .25s;
+  flex-shrink: 0;
+  background: var(--paper2);
+}
+.speak-dot.active {
+  border-color: var(--forest2);
+  background: rgba(42,96,64,.1);
+  box-shadow: 0 0 8px rgba(42,96,64,.35);
+  animation: speakPulse .8s ease infinite;
+}
+.speak-dot.hushed {
+  border-color: var(--rust2);
+  background: rgba(139,58,42,.08);
+}
+@keyframes speakPulse {
+  0%,100% { box-shadow: 0 0 6px rgba(42,96,64,.3); }
+  50%      { box-shadow: 0 0 14px rgba(42,96,64,.7); }
+}
+
+/* ══════════════════════════════════════════════
+   SETTINGS (Role Counter)
+   ══════════════════════════════════════════════ */
+.settings-grid {
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  overflow: hidden;
+  margin-bottom: 16px;
+}
+.role-row {
+  display: flex; align-items: center; gap: 12px;
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--border2);
+  transition: background .15s;
+}
+.role-row:last-child { border-bottom: none; }
+.role-row:hover { background: var(--paper2); }
+.role-icon { font-size: 20px; width: 28px; text-align: center; flex-shrink: 0; }
+.role-name { flex: 1; font-family: 'Libre Baskerville', serif; font-size: 14px; }
+.role-desc { font-size: 11px; color: var(--muted); font-style: italic; }
+.counter {
+  display: flex; align-items: center; gap: 8px; flex-shrink: 0;
+}
+.counter-btn {
+  width: 26px; height: 26px;
+  background: var(--ink);
+  border: none;
+  border-radius: 1px;
+  color: var(--paper);
+  font-size: 16px;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: all .15s;
+  line-height: 1;
+  font-family: 'Playfair Display', serif;
+}
+.counter-btn:hover { background: var(--muted); }
+.counter-val {
+  font-family: 'Playfair Display', serif;
+  font-size: 18px;
+  font-weight: 700;
+  min-width: 20px;
+  text-align: center;
+  color: var(--ink);
+}
+
+/* ══════════════════════════════════════════════
+   ALERTS
+   ══════════════════════════════════════════════ */
+.alert {
+  padding: 10px 14px;
+  border-left: 3px solid;
+  margin-bottom: 14px;
+  font-size: 13px;
+  line-height: 1.5;
+  font-family: 'Special Elite', cursive;
+  letter-spacing: .5px;
+}
+.alert.err    { border-color: var(--rust2); background: rgba(139,58,42,.07); color: var(--rust); }
+.alert.info   { border-color: var(--navy2); background: rgba(26,39,68,.07); color: var(--navy); }
+.alert.ok     { border-color: var(--forest2); background: rgba(26,61,43,.07); color: var(--forest); }
+.alert.warn   { border-color: var(--sepia); background: rgba(200,169,110,.1); color: #7a5c20; }
+
+/* ══════════════════════════════════════════════
+   TARGET BUTTONS (night actions / voting)
+   ══════════════════════════════════════════════ */
+.choice-list { margin-bottom: 4px; }
+.choice-btn {
+  display: flex; align-items: center; gap: 10px;
+  width: 100%;
+  background: white;
+  border: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  padding: 12px 16px;
+  cursor: pointer;
+  text-align: left;
+  font-family: 'Libre Baskerville', serif;
+  font-size: 15px;
+  color: var(--ink);
+  transition: all .15s;
+  position: relative;
+}
+.choice-btn + .choice-btn { border-top: none; }
+.choice-btn:first-child { border-radius: 2px 2px 0 0; }
+.choice-btn:last-child { border-radius: 0 0 2px 2px; }
+.choice-btn:only-child { border-radius: 2px; }
+.choice-btn:hover { background: var(--paper2); transform: translateX(3px); }
+.choice-btn.selected {
+  background: var(--ink);
+  color: var(--paper);
+  border-color: var(--ink);
+}
+.choice-btn .choice-marker {
+  width: 18px; height: 18px; border-radius: 50%;
+  border: 1.5px solid currentColor;
+  flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 10px;
+  opacity: .5;
+}
+.choice-btn.selected .choice-marker { opacity: 1; }
+
+/* ══════════════════════════════════════════════
+   ROLE REVEAL CARD
+   ══════════════════════════════════════════════ */
+.role-reveal {
+  text-align: center;
+  padding: 10px 0;
+}
+.role-reveal .role-emoji {
+  font-size: 72px;
+  display: block;
+  margin-bottom: 14px;
+  animation: iconDrop .5s cubic-bezier(.34,1.56,.64,1) both;
+  filter: drop-shadow(0 4px 12px rgba(14,12,10,.2));
+}
+@keyframes iconDrop {
+  from { transform: translateY(-24px) scale(.6); opacity: 0; }
+  to   { transform: none; opacity: 1; }
+}
+.role-reveal .role-name-tag {
+  display: inline-block;
+  background: var(--ink);
+  color: var(--paper);
+  font-family: 'Special Elite', cursive;
+  font-size: 13px;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  padding: 6px 18px;
+  border-radius: 1px;
+  margin-bottom: 14px;
+}
+.role-reveal .role-name-tag.mafia  { background: var(--rust); }
+.role-reveal .role-name-tag.doctor  { background: var(--forest); }
+.role-reveal .role-name-tag.detective { background: var(--navy); }
+.role-reveal .role-name-tag.cupid  { background: #7a1a3a; }
+.role-reveal .role-name-tag.jester { background: #5a3a00; }
+
+/* ══════════════════════════════════════════════
+   HEADLINE STRIP
+   ══════════════════════════════════════════════ */
+.headline {
+  background: var(--ink);
+  color: var(--paper);
+  padding: 12px 16px;
+  border-radius: var(--r);
+  margin-bottom: 14px;
+  position: relative;
+}
+.headline .kicker {
+  font-family: 'Special Elite', cursive;
+  font-size: 9px;
+  letter-spacing: 4px;
+  color: var(--sepia);
+  text-transform: uppercase;
+  display: block;
+  margin-bottom: 5px;
+}
+.headline h2 {
+  font-family: 'Playfair Display', serif;
+  font-size: 20px;
+  color: var(--paper);
+  margin-bottom: 0;
+  line-height: 1.3;
+}
+
+/* ══════════════════════════════════════════════
+   DEAD LIST
+   ══════════════════════════════════════════════ */
+.obituary {
+  background: var(--paper2);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--rust2);
+  padding: 12px 14px;
+  margin-bottom: 14px;
+  border-radius: 0 var(--r) var(--r) 0;
+}
+.obituary .obit-head {
+  font-family: 'Special Elite', cursive;
+  font-size: 9px;
+  letter-spacing: 3px;
+  color: var(--rust2);
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+.obit-row {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 4px 0;
+  border-bottom: 1px dashed var(--border);
+  font-size: 14px;
+}
+.obit-row:last-child { border-bottom: none; }
+
+/* ══════════════════════════════════════════════
+   VOTE BAR
+   ══════════════════════════════════════════════ */
+.vote-tally { margin-bottom: 14px; }
+.vote-tally-head {
+  font-family: 'Special Elite', cursive;
+  font-size: 9px; letter-spacing: 3px; text-transform: uppercase;
+  color: var(--muted); margin-bottom: 10px;
+}
+.vote-entry { margin-bottom: 7px; }
+.vote-entry-label {
+  display: flex; justify-content: space-between;
+  font-size: 13px; margin-bottom: 3px;
+  font-family: 'Special Elite', cursive; letter-spacing: .5px;
+}
+.vote-track {
+  height: 7px; background: var(--paper2);
+  border: 1px solid var(--border); border-radius: 1px;
+  overflow: hidden;
+}
+.vote-fill {
+  height: 100%; background: var(--ink);
+  border-radius: 1px;
+  transition: width .6s cubic-bezier(.34,1.56,.64,1);
+  width: 0;
+}
+
+/* ══════════════════════════════════════════════
+   LINK ROW
+   ══════════════════════════════════════════════ */
+.link-strip {
+  display: flex; gap: 6px; align-items: center;
+  background: var(--paper2);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 9px 12px;
+  margin-bottom: 14px;
+}
+.link-strip span {
+  flex: 1; font-size: 11px; color: var(--muted);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  font-family: 'Special Elite', cursive; letter-spacing: .5px;
+}
+.link-strip button {
+  flex-shrink: 0; background: var(--ink);
+  border: none; border-radius: 1px;
+  color: var(--paper); font-family: 'Special Elite', cursive;
+  font-size: 9px; letter-spacing: 2px; text-transform: uppercase;
+  padding: 5px 11px; cursor: pointer; transition: background .2s;
+}
+.link-strip button:hover { background: var(--muted); }
+
+/* ══════════════════════════════════════════════
+   SPINNER / LOADING
+   ══════════════════════════════════════════════ */
+.spin {
+  display: inline-block; width: 18px; height: 18px;
+  border: 2px solid rgba(14,12,10,.1);
+  border-top-color: var(--ink);
+  border-radius: 50%;
+  animation: rot .6s linear infinite;
+  vertical-align: middle;
+}
+@keyframes rot { to { transform: rotate(360deg); } }
+
+.loading-state {
+  text-align: center; padding: 28px 0;
+}
+.loading-state p {
+  font-family: 'Special Elite', cursive;
+  font-size: 11px; letter-spacing: 3px; text-transform: uppercase;
+  color: var(--muted); margin-top: 14px;
+}
+
+/* ══════════════════════════════════════════════
+   TRANSITIONS & ANIMATIONS
+   ══════════════════════════════════════════════ */
+#curtain {
+  position: fixed; inset: 0; background: var(--ink);
+  z-index: 9998; pointer-events: none;
+  opacity: 0; transition: opacity .3s;
+}
+#curtain.show { opacity: 1; }
+
+.fade { animation: fadeUp .45s ease both; }
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.flip { animation: flipCard .55s cubic-bezier(.34,1.2,.64,1) both; }
+@keyframes flipCard {
+  from { transform: perspective(800px) rotateX(-18deg) scale(.94); opacity: 0; }
+  to   { transform: none; opacity: 1; }
+}
+
+.stamp { animation: stampIn .4s cubic-bezier(.34,1.56,.64,1) both; }
+@keyframes stampIn {
+  from { transform: scale(1.25); opacity: 0; }
+  to   { transform: scale(1); opacity: 1; }
+}
+
+/* stagger children */
+.stagger > * { animation: fadeUp .4s ease both; }
+.stagger > *:nth-child(1) { animation-delay: .04s }
+.stagger > *:nth-child(2) { animation-delay: .08s }
+.stagger > *:nth-child(3) { animation-delay: .12s }
+.stagger > *:nth-child(4) { animation-delay: .16s }
+.stagger > *:nth-child(5) { animation-delay: .20s }
+.stagger > *:nth-child(6) { animation-delay: .24s }
+.stagger > *:nth-child(7) { animation-delay: .28s }
+.stagger > *:nth-child(8) { animation-delay: .32s }
+
+/* typewriter cursor */
+.tw::after { content: '|'; animation: blink 1s infinite; color: var(--muted); }
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+
+/* Night mode body */
+body.night { background: #06080e; }
+body.night .card {
+  background: #111822;
+  border-color: rgba(200,169,110,.15);
+  color: #ddd5c0;
+}
+body.night .card::before { background: var(--sepia); }
+body.night .section-head { color: #ddd5c0; border-color: rgba(200,169,110,.3); }
+body.night .section-head.sm { color: #8a7a60; border-color: rgba(200,169,110,.1); }
+body.night h2 { color: #ddd5c0; }
+body.night h3 { color: #8a7a60; }
+body.night .lede { color: #7a6a50; }
+body.night .player-row { background: rgba(255,255,255,.03); border-color: rgba(200,169,110,.08); }
+body.night .player-name { color: #ddd5c0; }
+body.night .player-badge { background: rgba(0,0,0,.3); border-color: rgba(200,169,110,.12); color: #8a7a60; }
+body.night .settings-grid { background: rgba(255,255,255,.03); border-color: rgba(200,169,110,.1); }
+body.night .role-row:hover { background: rgba(255,255,255,.05); }
+body.night .role-row { border-color: rgba(200,169,110,.08); }
+body.night .role-name { color: #ddd5c0; }
+body.night .btn { background: rgba(245,240,232,.85); color: var(--ink); border-color: rgba(245,240,232,.85); }
+body.night .btn.outline { background: transparent; color: rgba(245,240,232,.6); border-color: rgba(245,240,232,.3); }
+body.night .btn.outline:hover:not(:disabled) { background: rgba(245,240,232,.1); }
+body.night .btn.danger { background: var(--rust); color: var(--paper); border-color: var(--rust); }
+body.night .btn.success { background: var(--forest); color: var(--paper); border-color: var(--forest); }
+body.night .btn.accent { background: var(--navy); color: var(--paper); border-color: var(--navy); }
+body.night .divider::before, body.night .divider::after { background: rgba(200,169,110,.15); }
+body.night .choice-btn { background: rgba(255,255,255,.03); border-color: rgba(200,169,110,.1); color: #ddd5c0; }
+body.night .choice-btn:hover { background: rgba(255,255,255,.07); }
+body.night .choice-btn.selected { background: rgba(245,240,232,.9); color: var(--ink); }
+body.night .link-strip { background: rgba(255,255,255,.04); border-color: rgba(200,169,110,.12); }
+body.night .code-block { background: rgba(245,240,232,.9); }
+body.night .code-val { color: var(--ink); text-shadow: none; }
+body.night .code-block::before { color: var(--muted); }
+body.night .alert.info { background: rgba(26,39,68,.25); color: #8ab; }
+body.night .alert.ok { background: rgba(26,61,43,.25); color: #8c8; }
+body.night .alert.err { background: rgba(139,58,42,.25); color: #e87; }
+body.night input[type=text] { background: rgba(255,255,255,.05); border-color: rgba(200,169,110,.2); border-bottom-color: rgba(200,169,110,.5); color: #ddd5c0; }
+body.night input[type=text]:focus { border-color: rgba(200,169,110,.5); box-shadow: 0 2px 0 0 rgba(200,169,110,.4); }
+body.night input::placeholder { color: rgba(200,169,110,.2); }
+body.night .vote-track { background: rgba(255,255,255,.06); border-color: rgba(200,169,110,.1); }
+body.night .vote-fill { background: rgba(245,240,232,.85); }
+body.night .obituary { background: rgba(139,58,42,.1); border-color: rgba(139,58,42,.2); }
+body.night .obit-row { border-color: rgba(200,169,110,.1); }
+
+/* ══════════════════════════════════════════════
+   VOICE BAR
+   ══════════════════════════════════════════════ */
+#voice-bar {
+  position: fixed; bottom: 16px; left: 50%; transform: translateX(-50%);
+  background: var(--ink);
+  border-radius: 40px;
+  padding: 8px 16px;
+  display: flex; align-items: center; gap: 12px;
+  z-index: 200;
+  box-shadow: 0 4px 20px rgba(0,0,0,.4);
+  opacity: 0; pointer-events: none;
+  transition: opacity .3s, transform .3s;
+  transform: translateX(-50%) translateY(8px);
+  white-space: nowrap;
+}
+#voice-bar.visible { opacity: 1; pointer-events: all; transform: translateX(-50%) translateY(0); }
+#voice-bar .vb-label {
+  font-family: 'Special Elite', cursive;
+  font-size: 9px; letter-spacing: 3px; text-transform: uppercase;
+  color: rgba(245,240,232,.45);
+}
+#voice-bar .vb-label.on { color: rgba(42,160,64,.8); }
+#voice-bar .vb-label.muted { color: rgba(192,68,43,.7); }
+.vb-icon-btn {
+  background: rgba(255,255,255,.1);
+  border: 1px solid rgba(255,255,255,.15);
+  border-radius: 50%;
+  width: 32px; height: 32px;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px;
+  transition: all .2s;
+  color: var(--paper);
+}
+.vb-icon-btn:hover { background: rgba(255,255,255,.18); }
+.vb-icon-btn.muted { background: rgba(192,68,43,.25); border-color: rgba(192,68,43,.4); }
+.vb-text-btn {
+  background: rgba(255,255,255,.1);
+  border: 1px solid rgba(255,255,255,.15);
+  border-radius: 20px;
+  padding: 4px 12px;
+  cursor: pointer;
+  font-family: 'Special Elite', cursive;
+  font-size: 9px; letter-spacing: 2px; text-transform: uppercase;
+  color: rgba(245,240,232,.8);
+  transition: all .2s;
+}
+.vb-text-btn:hover { background: rgba(255,255,255,.18); }
+
+/* ══════════════════════════════════════════════
+   NEWSPAPER HEADLINE - WELCOME
+   ══════════════════════════════════════════════ */
+.welcome-paper {
+  background: var(--paper);
+  width: 100%; max-width: 520px;
+  border: 1px solid rgba(14,12,10,.25);
+  border-radius: var(--r);
+  box-shadow: var(--shadow-lg), 8px 8px 0 rgba(14,12,10,.08);
+  overflow: hidden;
+  position: relative;
+}
+.welcome-paper::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; height: 6px;
+  background: var(--ink);
+}
+.paper-header {
+  padding: 20px 28px 16px;
+  border-bottom: 3px double var(--ink);
+}
+.paper-date {
+  display: flex; justify-content: space-between; align-items: center;
+  font-family: 'Special Elite', cursive;
+  font-size: 10px; letter-spacing: 2px;
+  color: var(--muted); text-transform: uppercase;
+  margin-bottom: 10px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--border);
+}
+.paper-title {
+  font-family: 'Playfair Display', serif;
+  font-weight: 900;
+  font-size: clamp(52px, 14vw, 88px);
+  letter-spacing: -2px;
+  line-height: .9;
+  color: var(--ink);
+  text-transform: uppercase;
+  text-align: center;
+}
+.paper-tagline {
+  font-family: 'Libre Baskerville', serif;
+  font-style: italic;
+  font-size: 12px;
+  color: var(--muted);
+  text-align: center;
+  margin-top: 8px;
+  border-top: 1px solid var(--border);
+  padding-top: 8px;
+}
+.paper-body { padding: 20px 28px 28px; }
+.paper-col {
+  border-left: 1px solid var(--border);
+  padding-left: 18px;
+  margin-left: 2px;
+  margin-bottom: 20px;
+}
+.paper-col-head {
+  font-family: 'Playfair Display', serif;
+  font-weight: 700;
+  font-size: 16px;
+  margin-bottom: 6px;
+  line-height: 1.3;
+}
+.paper-col p {
+  font-size: 13px;
+  line-height: 1.7;
+  color: var(--muted);
+  font-style: italic;
+}
+
+/* ══════════════════════════════════════════════
+   GAME PHASE LABELS
+   ══════════════════════════════════════════════ */
+.phase-banner {
+  background: var(--ink); color: var(--paper);
+  text-align: center; padding: 8px 16px;
+  font-family: 'Special Elite', cursive;
+  font-size: 10px; letter-spacing: 4px; text-transform: uppercase;
+  margin-bottom: 20px;
+  position: relative;
+}
+.phase-banner::after {
+  content: '';
+  position: absolute; bottom: -4px; left: 20px; right: 20px; height: 4px;
+  background: repeating-linear-gradient(90deg, var(--sepia) 0, var(--sepia) 8px, transparent 8px, transparent 12px);
+  opacity: .5;
+}
+
+/* big night number */
+.night-num {
+  font-family: 'Playfair Display', serif;
+  font-weight: 900;
+  font-size: 80px;
+  line-height: 1;
+  color: var(--ink);
+  text-align: center;
+  opacity: .06;
+  position: absolute;
+  bottom: 10px; right: 14px;
+  pointer-events: none;
+  user-select: none;
+}
+body.night .night-num { color: var(--paper); opacity: .04; }
+
+/* winner banner */
+.winner-banner {
+  font-family: 'Playfair Display', serif;
+  font-weight: 900;
+  font-size: clamp(28px, 8vw, 48px);
+  text-align: center;
+  line-height: 1.1;
+  margin-bottom: 8px;
+  animation: stampIn .5s cubic-bezier(.34,1.56,.64,1) both;
+}
+.winner-banner.town   { color: var(--forest); }
+.winner-banner.mafia  { color: var(--rust); }
+.winner-banner.jester { color: #8b5e00; }
+
+/* ── host mute toggle ── */
+.mute-all-toggle {
+  display: inline-flex; align-items: center; gap: 7px;
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 6px 14px;
+  cursor: pointer;
+  font-family: 'Special Elite', cursive;
+  font-size: 9px; letter-spacing: 2px; text-transform: uppercase;
+  color: var(--muted);
+  transition: all .2s;
+}
+.mute-all-toggle:hover { border-color: var(--ink); color: var(--ink); }
+.mute-all-toggle.active { background: var(--rust); color: var(--paper); border-color: var(--rust); }
+body.night .mute-all-toggle { border-color: rgba(200,169,110,.2); color: rgba(200,169,110,.5); }
+body.night .mute-all-toggle:hover { border-color: rgba(200,169,110,.5); color: rgba(200,169,110,.8); }
+body.night .mute-all-toggle.active { background: var(--rust); color: var(--paper); border-color: var(--rust); }
+
+/* inline mute btn in player row */
+.mute-p-btn {
+  background: none; border: 1px solid var(--border);
+  border-radius: 1px; padding: 2px 8px;
+  font-family: 'Special Elite', cursive;
+  font-size: 8px; letter-spacing: 1px; text-transform: uppercase;
+  cursor: pointer; color: var(--muted); transition: all .15s;
+}
+.mute-p-btn:hover { border-color: var(--rust2); color: var(--rust2); }
+.mute-p-btn.muted { border-color: var(--rust2); color: var(--rust2); background: rgba(139,58,42,.07); }
+body.night .mute-p-btn { border-color: rgba(200,169,110,.15); color: rgba(200,169,110,.4); }
+body.night .mute-p-btn.muted { border-color: var(--rust2); color: #e87; background: rgba(139,58,42,.2); }
+
+/* ══════════════════════════════════════════════
+   MISC
+   ══════════════════════════════════════════════ */
+.candle-anim { display: inline-block; animation: flicker 2.5s infinite alternate; }
+@keyframes flicker {
+  0%,100%{opacity:1; transform: scaleY(1);}
+  30%{opacity:.85; transform: scaleY(.97);}
+  60%{opacity:.93;}
+  80%{opacity:.88; transform: scaleY(1.02);}
+}
 </style>
 </head>
 <body>
+<canvas id="bg-canvas"></canvas>
+<div id="curtain"></div>
+
+<!-- Floating voice bar -->
+<div id="voice-bar">
+  <button class="vb-icon-btn" id="vb-mic" title="Toggle mic">🎤</button>
+  <span class="vb-label" id="vb-label">VOICE CHAT</span>
+  <button class="vb-text-btn" id="vb-enable">ENABLE MIC</button>
+</div>
+
 <div id="app"></div>
+
 <script>
-const RI={
-  Mafia:{e:'🔪',c:'#c0392b',bg:'rgba(139,26,26,.3)'},
-  Doctor:{e:'💊',c:'#27ae60',bg:'rgba(26,74,46,.3)'},
-  Detective:{e:'🔍',c:'#2980b9',bg:'rgba(26,42,74,.3)'},
-  Cupid:{e:'💘',c:'#c0392b',bg:'rgba(120,26,60,.3)'},
-  Jester:{e:'🃏',c:'#d35400',bg:'rgba(120,60,0,.3)'},
-  Villager:{e:'🏘️',c:'#7f8c8d',bg:'rgba(50,50,60,.3)'},
+/* ══════════════════════════════════════════════
+   DATA
+   ══════════════════════════════════════════════ */
+const ROLES = {
+  Mafia:     { e:'🔪', label:'mafia' },
+  Doctor:    { e:'💊', label:'doctor' },
+  Detective: { e:'🔍', label:'detective' },
+  Cupid:     { e:'💘', label:'cupid' },
+  Jester:    { e:'🃏', label:'jester' },
+  Civilian:  { e:'🏘️', label:'civilian' },
 };
-const RDESC={
-  Mafia:'Each night, eliminate a villager. Win when Mafia equal or outnumber the town.',
-  Doctor:'Each night, protect one player from death. You may protect yourself.',
-  Detective:'Each night, investigate someone to learn if they are Mafia.',
-  Cupid:'Tonight only: link two souls as lovers. If one dies, the other follows.',
-  Jester:'Win by being voted out during the day. Be suspicious, not obvious.',
-  Villager:'Find and vote out the Mafia before they take over the village.',
-};
-
-// Broker configs tried in order on timeout/error
-const PEER_CONFIGS=[
-  {host:'0.peerjs.com',port:443,path:'/',secure:true},
-  null, // PeerJS default init (same broker, different path)
-];
-
-let S={
-  screen:'welcome',playerName:'',isHost:false,roomCode:'',
-  peer:null,conn:null,conns:{},
-  lobbyPlayers:[],settings:{mafia:1,doctor:1,detective:1,cupid:0,jester:0},
-  myRole:null,myId:null,
-  phase:null,players:[],nightNumber:1,narration:'',loading:false,
-  nightDead:[],votedOut:null,winner:null,
-  nightActionType:null,nightActionTargets:[],nightActionResult:null,
-  cupidPick:[],_detTarget:null,_detName:'',
-  _nightQ:[],nightActions:{},lovers:[],voteData:{},
-  _rolesReady:0,_totalPlayers:0,
-  error:'',
+const RDESC = {
+  Mafia:     'Each night, eliminate a civilian. Win when Mafia equal or outnumber the town.',
+  Doctor:    'Each night, protect one person from death. You may protect yourself.',
+  Detective: 'Each night, investigate someone to learn if they are Mafia.',
+  Cupid:     'Tonight only: link two souls as lovers. If one dies, the other follows.',
+  Jester:    'Win by being voted out during the day. Act suspicious — but not too obvious.',
+  Civilian:  'Find and vote out the Mafia before they take over the town.',
 };
 
-// ─── RENDER ──────────────────────────────────────────────────────────────────
-function render(){document.getElementById('app').innerHTML=screens();bind();}
-function screens(){
-  if(S.screen==='welcome')return welcome();
-  if(S.screen==='name')return nameScreen();
-  if(S.screen==='mode')return mode();
-  if(S.screen==='join')return joinInput();
-  if(S.screen==='lobby')return lobby();
-  if(S.screen==='game')return gameScreen();
+/* ══════════════════════════════════════════════
+   STATE
+   ══════════════════════════════════════════════ */
+let S = {
+  screen:'welcome', playerName:'', isHost:false, roomCode:'',
+  peer:null, conn:null, conns:{},
+  lobbyPlayers:[], settings:{ mafia:1, doctor:1, detective:1, cupid:0, jester:0 },
+  myRole:null, myId:null,
+  phase:null, players:[], nightNumber:1, narration:'', loading:false,
+  nightDead:[], votedOut:null, winner:null,
+  nightActionType:null, nightActionTargets:[], nightActionResult:null,
+  cupidPick:[], _detTarget:null, _detName:'',
+  _nightQ:[], nightActions:{}, lovers:[], voteData:{},
+  _rolesReady:0, _totalPlayers:0, error:'',
+  // voice
+  voiceEnabled:false, voiceSelfMuted:false, voiceMutedByHost:false,
+  voiceHostMuteAll:false, voicePlayerMutes:{}, voiceSpeaking:{},
+};
+
+/* ══════════════════════════════════════════════
+   BACKGROUND — moving ink dots
+   ══════════════════════════════════════════════ */
+(function bgCanvas() {
+  const c = document.getElementById('bg-canvas');
+  const ctx = c.getContext('2d');
+  let W, H, dots = [];
+  const resize = () => { W = c.width = innerWidth; H = c.height = innerHeight; };
+  resize(); addEventListener('resize', resize);
+  const isNight = () => document.body.classList.contains('night');
+  for (let i = 0; i < 40; i++) dots.push({
+    x: Math.random()*2000, y: Math.random()*1200,
+    r: Math.random()*1.2+.3,
+    vx: (Math.random()-.5)*.18, vy: (Math.random()-.5)*.12,
+    a: Math.random()*.3+.05
+  });
+  function loop() {
+    ctx.clearRect(0,0,W,H);
+    const col = isNight() ? '200,169,110' : '14,12,10';
+    dots.forEach(d => {
+      d.x = (d.x+d.vx+W)%W; d.y = (d.y+d.vy+H)%H;
+      ctx.beginPath(); ctx.arc(d.x,d.y,d.r,0,Math.PI*2);
+      ctx.fillStyle = `rgba(${col},${d.a})`; ctx.fill();
+    });
+    requestAnimationFrame(loop);
+  }
+  loop();
+})();
+
+/* ══════════════════════════════════════════════
+   TRANSITION
+   ══════════════════════════════════════════════ */
+let _tw = null;
+function transition(fn, fast=false) {
+  const el = document.getElementById('curtain');
+  el.classList.add('show');
+  clearTimeout(_tw);
+  _tw = setTimeout(() => { fn(); el.classList.remove('show'); }, fast ? 180 : 280);
+}
+
+/* ══════════════════════════════════════════════
+   NIGHT MODE
+   ══════════════════════════════════════════════ */
+function setNight(on) { document.body.classList.toggle('night', on); }
+
+/* ══════════════════════════════════════════════
+   TYPEWRITER
+   ══════════════════════════════════════════════ */
+let _twTimer = null;
+function typewrite(id, text, speed=22) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  clearTimeout(_twTimer);
+  el.textContent = ''; el.classList.add('tw');
+  let i = 0;
+  function tick() {
+    if (i < text.length) { el.textContent += text[i++]; _twTimer = setTimeout(tick, speed); }
+    else el.classList.remove('tw');
+  }
+  tick();
+}
+
+/* ══════════════════════════════════════════════
+   VOICE MODULE
+   ══════════════════════════════════════════════ */
+const VOICE = {
+  stream:null, calls:{}, audios:{}, analyser:null, actx:null, speaking:false, _tick:null,
+  async init() {
+    try {
+      this.stream = await navigator.mediaDevices.getUserMedia({ audio:true, video:false });
+      this.actx = new (window.AudioContext||window.webkitAudioContext)();
+      const src = this.actx.createMediaStreamSource(this.stream);
+      this.analyser = this.actx.createAnalyser(); this.analyser.fftSize = 512;
+      src.connect(this.analyser);
+      this.startDetect();
+      S.voiceEnabled = true; updateVoiceBar();
+      Object.keys(S.conns).forEach(pid => this.callPeer(pid));
+      if (!S.isHost && S.conn) S.conn.send({ type:'voice-ready', peerId:S.peer?.id });
+      return true;
+    } catch(e) { S.voiceEnabled = false; updateVoiceBar(); return false; }
+  },
+  startDetect() {
+    if (this._tick) clearInterval(this._tick);
+    const data = new Uint8Array(this.analyser.frequencyBinCount);
+    this._tick = setInterval(() => {
+      if (!this.analyser) return;
+      this.analyser.getByteFrequencyData(data);
+      const avg = data.reduce((a,b)=>a+b,0)/data.length;
+      const now = avg>14 && !S.voiceSelfMuted && !S.voiceMutedByHost && !S.voiceHostMuteAll;
+      if (now !== this.speaking) {
+        this.speaking = now;
+        S.voiceSpeaking[S.myId||'host'] = now;
+        const m = { type:'speaking', id:S.myId||'host', val:now };
+        if (S.isHost) broadcast(m); else if (S.conn) S.conn.send(m);
+        renderSpeakDots();
+      }
+    }, 140);
+  },
+  callPeer(pid) {
+    if (!this.stream || this.calls[pid]) return;
+    const call = S.peer?.call(pid, this.stream);
+    if (!call) return;
+    this.calls[pid] = call;
+    call.on('stream', s => this.attachAudio(pid, s));
+    call.on('close', () => { delete this.calls[pid]; this.detachAudio(pid); });
+  },
+  answerCall(call) {
+    this.calls[call.peer] = call;
+    call.answer(this.stream || new MediaStream());
+    call.on('stream', s => this.attachAudio(call.peer, s));
+    call.on('close', () => { delete this.calls[call.peer]; this.detachAudio(call.peer); });
+  },
+  attachAudio(pid, stream) {
+    if (this.audios[pid]) { this.audios[pid].srcObject = stream; return; }
+    const a = document.createElement('audio');
+    a.srcObject = stream; a.autoplay = true; a.playsInline = true; a.volume = 1;
+    document.body.appendChild(a); this.audios[pid] = a; this.applyMute(pid);
+  },
+  detachAudio(pid) {
+    if (this.audios[pid]) { this.audios[pid].srcObject = null; this.audios[pid].remove(); delete this.audios[pid]; }
+  },
+  applyMute(pid) {
+    const a = this.audios[pid]; if (!a) return;
+    a.muted = S.voiceHostMuteAll || (S.voicePlayerMutes[pid]||false);
+  },
+  applyAll() {
+    Object.keys(this.audios).forEach(pid => this.applyMute(pid));
+    if (this.stream) {
+      const t = this.stream.getAudioTracks()[0];
+      if (t) t.enabled = !S.voiceSelfMuted && !S.voiceMutedByHost && !S.voiceHostMuteAll;
+    }
+  },
+  setGlobalMute(val) {
+    S.voiceHostMuteAll = val; this.applyAll();
+    broadcast({ type:'voice-global-mute', muted:val });
+  },
+  destroy() {
+    if (this._tick) clearInterval(this._tick);
+    Object.values(this.calls).forEach(c => { try{c.close();}catch(e){} });
+    this.calls = {};
+    Object.values(this.audios).forEach(a => { a.srcObject=null; a.remove(); });
+    this.audios = {};
+    if (this.stream) this.stream.getTracks().forEach(t=>t.stop());
+    this.stream = null;
+    if (this.actx) this.actx.close(); this.actx = null;
+  }
+};
+
+function updateVoiceBar() {
+  const bar = document.getElementById('voice-bar');
+  const mic = document.getElementById('vb-mic');
+  const lbl = document.getElementById('vb-label');
+  const enb = document.getElementById('vb-enable');
+  if (!bar) return;
+  const show = S.screen==='lobby' || S.screen==='game';
+  bar.classList.toggle('visible', show);
+  if (!show) return;
+  enb.style.display = S.voiceEnabled ? 'none' : 'block';
+  mic.style.display = S.voiceEnabled ? 'flex' : 'none';
+  if (!S.voiceEnabled) { lbl.textContent='VOICE'; lbl.className='vb-label'; return; }
+  const muted = S.voiceSelfMuted||S.voiceMutedByHost||S.voiceHostMuteAll;
+  mic.textContent = muted ? '🔇' : '🎤';
+  mic.classList.toggle('muted', muted);
+  if (muted) { lbl.textContent='MUTED'; lbl.className='vb-label muted'; }
+  else if (S.voiceSpeaking[S.myId||'host']) { lbl.textContent='SPEAKING'; lbl.className='vb-label on'; }
+  else { lbl.textContent='LIVE'; lbl.className='vb-label on'; }
+}
+
+function renderSpeakDots() {
+  document.querySelectorAll('[data-speak]').forEach(el => {
+    const id = el.dataset.speak;
+    const speaking = S.voiceSpeaking[id]||false;
+    const hushed = S.voiceHostMuteAll||(S.voicePlayerMutes[id]||false);
+    el.className = 'speak-dot' + (hushed?' hushed':speaking?' active':'');
+    el.textContent = hushed?'🔇':speaking?'🔊':'🎙';
+  });
+}
+
+/* ══════════════════════════════════════════════
+   RENDER
+   ══════════════════════════════════════════════ */
+function render() {
+  document.getElementById('app').innerHTML = screens();
+  bind();
+  updateVoiceBar();
+  const isNight = S.screen==='game' && ['night','nightAction','roleReveal'].includes(S.phase);
+  setNight(isNight);
+  if (S.narration && !S.loading) {
+    setTimeout(() => typewrite('narration-text', '❝ ' + S.narration + ' ❞', 20), 100);
+  }
+}
+
+function screens() {
+  if (S.screen==='welcome') return welcome();
+  if (S.screen==='name')    return nameScreen();
+  if (S.screen==='mode')    return modeScreen();
+  if (S.screen==='join')    return joinScreen();
+  if (S.screen==='lobby')   return lobby();
+  if (S.screen==='game')    return gameScreen();
   return '';
 }
 
-function welcome(){
+/* ══════════════════════════════════════════════
+   SCREENS
+   ══════════════════════════════════════════════ */
+function welcome() {
+  const today = new Date().toLocaleDateString('en-US',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
   return `<div class="page fade">
-    <div style="text-align:center;padding:0 24px;max-width:420px;">
-      <div style="font-size:56px;margin-bottom:20px;" class="candle">🕯️</div>
-      <h1>MAFIA</h1>
-      <p class="sub" style="margin-top:10px;max-width:300px;margin-left:auto;margin-right:auto;">
-        In a village of secrets, trust no one.<br>The night always takes someone.
-      </p>
-      <div style="max-width:260px;margin:0 auto;">
-        <button class="btn" id="goBtnStart">⚡ START THE GAME</button>
+    <div class="welcome-paper">
+      <div class="paper-header">
+        <div class="paper-date">
+          <span>${today}</span>
+          <span>Vol. I · Est. This Evening</span>
+          <span>Price: Your Secrets</span>
+        </div>
+        <div class="paper-title">MAFIA</div>
+        <div class="paper-tagline">The Social Deduction Game of Lies, Trust & Betrayal</div>
+      </div>
+      <div class="paper-body stagger">
+        <div class="paper-col">
+          <div class="paper-col-head">Danger Lurks Among the Townspeople</div>
+          <p>A quiet town. A deadly secret. Every night, someone disappears. Every day, the citizens must decide who among them is a killer — before it's too late.</p>
+        </div>
+        <div style="margin-bottom:0;" class="stagger">
+          <button class="btn" id="goBtnStart">READ ALL ABOUT IT →</button>
+        </div>
       </div>
     </div>
   </div>`;
 }
 
-function nameScreen(){
-  const fromLink=!!new URLSearchParams(window.location.search).get('room');
+function nameScreen() {
+  const fromLink = !!new URLSearchParams(location.search).get('room');
   return `<div class="page fade">
-    <div class="card" style="max-width:360px;">
-      <div style="text-align:center;margin-bottom:22px;">
-        <div style="font-size:38px;margin-bottom:10px;">📜</div>
-        <h2>Who Are You?</h2>
-        <p class="sub" style="margin-bottom:0;font-size:15px;">Enter your name to take a seat at the table</p>
+    <div class="card" style="max-width:400px;">
+      <div class="masthead">
+        <div class="masthead-title" style="font-size:32px;">REGISTER</div>
+        <div class="masthead-sub">Citizens Log · Town of Mafiaville</div>
       </div>
-      ${S.error?`<div class="alert err">${S.error}</div>`:''}
-      <input type="text" id="inp-name" placeholder="Your name…" value="${S.playerName}" maxlength="18" autocomplete="off">
+      ${S.error ? `<div class="alert err">${S.error}</div>` : ''}
+      <div class="field">
+        <label>Your name</label>
+        <input type="text" id="inp-name" placeholder="Enter your name…" value="${esc(S.playerName)}" maxlength="18" autocomplete="off">
+      </div>
       <button class="btn" id="goBtnNameNext">TAKE MY SEAT →</button>
-      ${!fromLink?`<button class="btn ghost" id="goBtnBackWelcome">← Back</button>`:''}
+      ${!fromLink ? `<button class="btn outline" id="goBtnBackWelcome">← Back</button>` : ''}
     </div>
   </div>`;
 }
 
-function mode(){
+function modeScreen() {
   return `<div class="page fade">
-    <div class="card" style="max-width:380px;">
-      <div style="text-align:center;margin-bottom:26px;">
-        <div style="font-size:38px;margin-bottom:10px;">🏚️</div>
-        <h2>The Village</h2>
-        <p class="sub" style="margin-bottom:0;font-size:15px;">
-          Welcome, <strong style="color:var(--gold)">${esc(S.playerName)}</strong>. What brings you here?
-        </p>
+    <div class="card" style="max-width:400px;">
+      <div class="masthead">
+        <div class="masthead-rule">Welcome, Citizen</div>
+        <div class="masthead-title" style="font-size:28px;">${esc(S.playerName)}</div>
+        <div class="masthead-sub">Town of Mafiaville</div>
       </div>
-      ${S.error?`<div class="alert err">${S.error}</div>`:''}
+      ${S.error ? `<div class="alert err">${S.error}</div>` : ''}
       ${S.loading
-        ?`<div style="text-align:center;padding:20px 0;">
-            <span class="spin"></span>
-            <p style="color:var(--muted);margin-top:14px;font-style:italic;">Preparing the village…</p>
-            <p style="color:var(--muted);font-size:13px;margin-top:6px;">Connecting to game server…</p>
-          </div>`
-        :`<button class="btn" id="goBtnCreate">🏠 CREATE A ROOM</button>
-          <div class="divider"></div>
-          <button class="btn ghost" id="goBtnJoin">🚪 JOIN A ROOM</button>`
+        ? `<div class="loading-state"><span class="spin"></span><p>Establishing Connection…</p></div>`
+        : `<button class="btn" id="goBtnCreate">🏠 HOST A GAME</button>
+           <div class="divider">or</div>
+           <button class="btn outline" id="goBtnJoin">🚪 JOIN A GAME</button>`
       }
     </div>
   </div>`;
 }
 
-function joinInput(){
+function joinScreen() {
   return `<div class="page fade">
-    <div class="card" style="max-width:360px;">
-      <div style="text-align:center;margin-bottom:22px;">
-        <div style="font-size:38px;margin-bottom:10px;">🚪</div>
-        <h2>Join a Room</h2>
-        <p class="sub" style="margin-bottom:0;font-size:15px;">Enter the room code from the host</p>
+    <div class="card" style="max-width:400px;">
+      <div class="masthead">
+        <div class="masthead-title" style="font-size:28px;">JOIN</div>
+        <div class="masthead-sub">Enter the room code from the host</div>
       </div>
-      ${S.error?`<div class="alert err">${S.error}</div>`:''}
-      <input type="text" id="inp-code" placeholder="ROOM CODE" value="${S.roomCode||''}"
-        maxlength="6" autocomplete="off"
-        style="text-align:center;font-size:26px;letter-spacing:8px;text-transform:uppercase;">
+      ${S.error ? `<div class="alert err">${S.error}</div>` : ''}
+      <div class="field">
+        <label>Room Code</label>
+        <input type="text" id="inp-code" class="code-input" placeholder="XXXXXX" value="${esc(S.roomCode||'')}" maxlength="6" autocomplete="off">
+      </div>
       ${S.loading
-        ?`<div style="text-align:center;padding:14px;"><span class="spin"></span> <span style="color:var(--muted);vertical-align:middle;margin-left:8px;">Connecting…</span></div>`
-        :`<button class="btn" id="goBtnJoinConnect">→ ENTER THE VILLAGE</button>`}
-      <button class="btn ghost" id="goBtnBackMode">← Back</button>
+        ? `<div class="loading-state"><span class="spin"></span><p>Connecting…</p></div>`
+        : `<button class="btn" id="goBtnJoinConnect">→ ENTER THE TOWN</button>`
+      }
+      <button class="btn outline" id="goBtnBackMode">← Back</button>
     </div>
   </div>`;
 }
 
-function lobby(){
-  const players=S.lobbyPlayers;
-  const link=`${location.origin}${location.pathname}?room=${S.roomCode}`;
+function lobby() {
+  const players = S.lobbyPlayers;
+  const link = `${location.origin}${location.pathname}?room=${S.roomCode}`;
   return `<div class="page fade">
     <div class="card">
-      <div style="text-align:center;margin-bottom:18px;">
-        <div style="font-size:34px;margin-bottom:8px;">🏚️</div>
-        <h2>The Tavern</h2>
-        <p style="font-size:11px;letter-spacing:3px;color:var(--muted);margin-bottom:2px;">
-          ${S.isHost?'YOU ARE THE INNKEEPER':'WAITING FOR INNKEEPER TO START'}
-        </p>
+      <div class="masthead">
+        <div class="masthead-rule">${S.isHost?'Town Hall · You are the Moderator':'Town Hall · Waiting for Moderator'}</div>
+        <div class="masthead-title" style="font-size:28px;">THE LOBBY</div>
       </div>
-      <div class="code-wrap">
-        <div class="code-lbl">Room Code</div>
-        <div class="code-val">${S.roomCode}</div>
-      </div>
-      <div class="link-row">
+      <div class="code-block" style="cursor:default;">${S.roomCode.split('').join('<span style="opacity:.3"> </span>')}</div>
+      <div class="link-strip">
         <span>${link}</span>
-        <button id="goBtnCopyLink">COPY</button>
+        <button id="goBtnCopyLink">COPY LINK</button>
       </div>
-      <div class="divider"></div>
-      <h3>👥 PLAYERS (${players.length})</h3>
-      ${players.map(p=>`
-        <div class="player-row">
-          <div class="dot${p.connected===false?' off':''}"></div>
-          <span style="flex:1;font-size:17px;">${esc(p.name)}</span>
-          ${p.isHost?'<span style="color:var(--amber);font-size:13px;">👑 HOST</span>':''}
-        </div>`).join('')}
-      ${players.length<4?`<div class="alert info" style="margin-top:10px;">Need ${4-players.length} more player${4-players.length!==1?'s':''} to start.</div>`:''}
-      ${S.isHost?`
-        <div class="divider"></div>
-        <h3>⚙️ ROLES</h3>
-        <div style="margin-bottom:18px;">
-          ${['mafia','doctor','detective','cupid','jester'].map(r=>`
-          <div class="setting-row">
-            <span style="font-size:15px;color:var(--muted);">${RI[cap(r)]?.e} ${cap(r)}</span>
-            <div class="counter">
-              <button onclick="adjSetting('${r}',-1)">−</button>
-              <span id="sval-${r}">${S.settings[r]}</span>
-              <button onclick="adjSetting('${r}',1)">+</button>
-            </div>
+      <div class="divider">Citizens (${players.length})</div>
+      <div class="player-list stagger" id="player-list">
+        ${players.map(p=>`
+          <div class="player-row">
+            <div class="status-dot ${p.connected===false?'off':'on'}"></div>
+            <span class="player-name">${esc(p.name)}</span>
+            ${S.voiceEnabled ? `<div class="speak-dot ${S.voiceSpeaking[p.id||'host']?'active':'silent'}" data-speak="${p.id||'host'}">🎙</div>` : ''}
+            ${p.isHost ? `<span class="player-badge">👑 Moderator</span>` : ''}
+            ${S.isHost && !p.isHost ? `<button class="mute-p-btn ${S.voicePlayerMutes[p.id]?'muted':''}" onclick="hostToggleMute('${p.id}')">${S.voicePlayerMutes[p.id]?'UNMUTE':'MUTE'}</button>` : ''}
           </div>`).join('')}
-        </div>
-        ${S.error?`<div class="alert err">${S.error}</div>`:''}
-        <button class="btn" id="goBtnHostStart" ${players.length<4?'disabled':''}>🕯️ BEGIN THE NIGHT</button>
-      `:`
-        <div class="divider"></div>
-        <div style="text-align:center;padding:12px 0;">
-          <span class="spin"></span>
-          <p style="color:var(--muted);margin-top:12px;font-style:italic;">The innkeeper prepares the roles…</p>
-        </div>
-      `}
-    </div>
-  </div>`;
-}
-
-function gameScreen(){
-  if(S.phase==='roleReveal')return roleReveal();
-  if(S.phase==='night')return nightWait();
-  if(S.phase==='nightAction')return nightAction();
-  if(S.phase==='day')return dayPhase();
-  if(S.phase==='vote')return votePh();
-  if(S.phase==='voteResult')return voteResult();
-  if(S.phase==='over')return gameOver();
-  return `<div class="page"><div class="card"><div style="text-align:center"><span class="spin"></span></div></div></div>`;
-}
-
-function roleReveal(){
-  const r=S.myRole;const ri=RI[r]||RI.Villager;
-  const mafPals=S.players.filter(p=>p.role==='Mafia'&&p.id!==S.myId);
-  return `<div class="page fade">
-    <div class="card" style="text-align:center;">
-      <p style="font-size:11px;letter-spacing:3px;color:var(--muted);margin-bottom:14px;">YOUR SECRET ROLE</p>
-      <div style="font-size:68px;margin-bottom:14px;">${ri.e}</div>
-      <div style="margin-bottom:18px;">
-        <span class="tag" style="background:${ri.bg};border:1px solid ${ri.c};color:${ri.c};">${r.toUpperCase()}</span>
       </div>
-      <p class="italic" style="margin-bottom:18px;">${RDESC[r]||''}</p>
-      ${r==='Mafia'&&mafPals.length>0?`
-        <div style="background:rgba(139,26,26,.2);border:1px solid rgba(192,57,43,.3);border-radius:3px;padding:12px;margin-bottom:18px;">
-          <p style="font-size:11px;letter-spacing:2px;color:#e74c3c;margin-bottom:8px;">YOUR MAFIA ALLIES:</p>
-          ${mafPals.map(p=>`<p style="font-size:16px;">🔪 ${esc(p.name)}</p>`).join('')}
-        </div>`:''}
-      <p style="font-size:11px;color:var(--muted);letter-spacing:1px;margin-bottom:14px;">🤫 KEEP THIS SECRET</p>
-      <button class="btn" id="goBtnRoleReady">I UNDERSTAND MY ROLE →</button>
-    </div>
-  </div>`;
-}
-
-function nightWait(){
-  return `<div class="page fade">
-    <div class="card" style="text-align:center;">
-      <div style="font-size:52px;margin-bottom:14px;" class="candle">🌑</div>
-      <h2>Night ${S.nightNumber}</h2>
-      <p class="italic" style="margin-bottom:20px;">
-        ${S.loading?'<span class="spin"></span>':S.narration?`❝${S.narration}❞`:'The village falls into a deep silence…'}
-      </p>
-      <div class="divider"></div>
-      <p style="font-size:12px;letter-spacing:2px;color:var(--muted);">THE VILLAGE SLEEPS…</p>
-      <p style="font-size:14px;color:var(--muted);margin-top:10px;font-style:italic;">Those with special roles are being called upon.</p>
-    </div>
-  </div>`;
-}
-
-function nightAction(){
-  const type=S.nightActionType,targets=S.nightActionTargets,res=S.nightActionResult;
-  const info={
-    'mafia-kill':{icon:'🔪',title:'MAFIA AWAKENS',inst:'Choose your victim for tonight:'},
-    'doctor-protect':{icon:'💊',title:'DOCTOR AWAKENS',inst:'Who will you protect tonight?'},
-    'detective-investigate':{icon:'🔍',title:'DETECTIVE AWAKENS',inst:'Investigate someone:'},
-    'cupid-link':{icon:'💘',title:'CUPID AWAKENS',inst:`Link two souls as lovers (${S.cupidPick.length}/2):`},
-  };
-  const {icon,title,inst}=info[type]||{icon:'❓',title:'',inst:''};
-  return `<div class="page fade">
-    <div class="card">
-      <div style="text-align:center;margin-bottom:18px;">
-        <div style="font-size:46px;margin-bottom:10px;">${icon}</div>
-        <p style="font-size:11px;letter-spacing:3px;color:var(--amber);margin-bottom:6px;">${title}</p>
-        <p class="italic">${inst}</p>
-      </div>
-      ${type==='detective-investigate'&&res!==null?`
-        <div style="text-align:center;padding:18px 0;">
-          <div style="font-size:42px;margin-bottom:10px;">${res?'🔴':'🟢'}</div>
-          <p style="font-size:18px;font-weight:600;color:${res?'#e74c3c':'#2ecc71'}">
-            ${esc(S._detName||'')} is ${res?'MAFIA!':'not Mafia.'}
-          </p>
-          <p style="color:var(--muted);font-size:14px;margin-top:8px;font-style:italic;">Your knowledge, your burden.</p>
-          <button class="btn" id="goBtnDetConfirm" style="max-width:260px;margin:18px auto 0;">Understood →</button>
-        </div>
-      `:`
-        ${targets.map(p=>`
-          <button class="target-btn${type==='cupid-link'&&S.cupidPick.includes(p.id)?' sel':''}" data-act-id="${p.id}">
-            ${type==='cupid-link'?(S.cupidPick.includes(p.id)?'❤️':'○'):'○'} ${esc(p.name)}
-          </button>`).join('')}
-        ${type==='cupid-link'&&S.cupidPick.length===2?`<button class="btn" id="goBtnCupidConfirm" style="margin-top:8px;">💘 LINK THESE SOULS →</button>`:''}
-      `}
-    </div>
-  </div>`;
-}
-
-function dayPhase(){
-  const alive=S.players.filter(p=>p.alive);
-  return `<div class="page fade">
-    <div class="card">
-      <div style="text-align:center;margin-bottom:14px;">
-        <div style="font-size:46px;margin-bottom:8px;">☀️</div>
-        <h2>Day ${S.nightNumber}</h2>
-        <p class="italic">${S.loading?'<span class="spin"></span>':S.narration?`❝${S.narration}❞`:''}</p>
-      </div>
-      ${S.nightDead.length>0?`
-        <div style="background:rgba(139,26,26,.2);border:1px solid rgba(192,57,43,.3);border-radius:3px;padding:12px;margin-bottom:14px;">
-          <p style="font-size:11px;letter-spacing:2px;color:#e74c3c;margin-bottom:8px;">⚰️ FOUND DEAD AT DAWN:</p>
-          ${S.nightDead.map(d=>`
-            <div style="display:flex;justify-content:space-between;align-items:center;padding:3px 0;">
-              <span>${esc(d.name)}</span>
-              <span style="font-size:13px;color:var(--muted);">was ${d.role||'unknown'}</span>
+      ${players.length < 4 ? `<div class="alert info" style="margin-top:10px;">Need ${4-players.length} more player${4-players.length!==1?'s':''} to start.</div>` : ''}
+      ${S.isHost ? `
+        <div class="divider">Role Settings</div>
+        <div class="settings-grid">
+          ${['mafia','doctor','detective','cupid','jester'].map(r=>`
+            <div class="role-row">
+              <span class="role-icon">${ROLES[cap(r)]?.e}</span>
+              <div style="flex:1;">
+                <div class="role-name">${cap(r)}</div>
+              </div>
+              <div class="counter">
+                <button class="counter-btn" onclick="adjSetting('${r}',-1)">−</button>
+                <span class="counter-val" id="sval-${r}">${S.settings[r]}</span>
+                <button class="counter-btn" onclick="adjSetting('${r}',1)">+</button>
+              </div>
             </div>`).join('')}
-        </div>`
-      :`<div class="alert ok" style="margin-bottom:14px;">😌 No one died last night.</div>`}
-      <div style="background:rgba(0,0,0,.22);border:1px solid rgba(212,138,28,.12);border-radius:3px;padding:12px;margin-bottom:18px;">
-        <p style="font-size:11px;letter-spacing:2px;color:var(--muted);margin-bottom:8px;">STILL ALIVE</p>
-        <div style="display:flex;flex-wrap:wrap;gap:6px;">
-          ${alive.map(p=>`<span style="background:rgba(255,255,255,.07);border-radius:3px;padding:4px 12px;font-size:14px;">${esc(p.name)}</span>`).join('')}
         </div>
-      </div>
-      <p class="italic" style="text-align:center;font-size:14px;letter-spacing:1px;margin-bottom:16px;">Discuss amongst yourselves. Find the killer.</p>
-      ${S.isHost
-        ?`<button class="btn" id="goBtnBeginVote" ${S.loading?'disabled':''}>🗳️ BEGIN VOTING</button>`
-        :`<div style="text-align:center;padding:8px 0;"><span class="spin"></span><p style="color:var(--muted);margin-top:10px;font-style:italic;">Waiting for the innkeeper to begin voting…</p></div>`}
+        ${S.error ? `<div class="alert err">${S.error}</div>` : ''}
+        <button class="btn" id="goBtnHostStart" ${players.length<4?'disabled':''}>🕯 BEGIN THE NIGHT</button>
+      ` : `
+        <div style="text-align:center;padding:20px 0;">
+          <span class="spin"></span>
+          <p style="font-family:'Special Elite',cursive;font-size:11px;letter-spacing:2px;color:var(--muted);margin-top:12px;text-transform:uppercase;">Waiting for the moderator…</p>
+        </div>
+      `}
     </div>
   </div>`;
 }
 
-function votePh(){
-  const myVote=S.voteData[S.myId];
-  const alive=S.players.filter(p=>p.alive&&p.id!==S.myId);
-  if(myVote!==undefined){
-    const tv=S.players.find(p=>p.id===myVote);
-    return `<div class="page fade"><div class="card" style="text-align:center;">
-      <div style="font-size:46px;margin-bottom:12px;">🗳️</div>
-      <h2>Vote Cast</h2>
-      <p class="italic">You voted for <strong style="color:var(--gold)">${tv?esc(tv.name):'abstain'}</strong>.</p>
-      <div class="divider"></div>
-      <span class="spin"></span>
-      <p style="color:var(--muted);margin-top:12px;font-style:italic;">Waiting for all players to vote…</p>
+function gameScreen() {
+  if (S.phase==='roleReveal')  return roleReveal();
+  if (S.phase==='night')       return nightWait();
+  if (S.phase==='nightAction') return nightAction();
+  if (S.phase==='day')         return dayPhase();
+  if (S.phase==='vote')        return votePh();
+  if (S.phase==='voteResult')  return voteResult();
+  if (S.phase==='over')        return gameOver();
+  return `<div class="page"><div class="card"><div class="loading-state"><span class="spin"></span></div></div></div>`;
+}
+
+function roleReveal() {
+  const r = S.myRole; const ri = ROLES[r]||ROLES.Civilian;
+  const mafPals = S.players.filter(p=>p.role==='Mafia'&&p.id!==S.myId);
+  return `<div class="page fade">
+    <div class="card flip" style="max-width:420px;">
+      <div class="phase-banner">🌑 Night ${S.nightNumber} · Role Assignment</div>
+      <div class="role-reveal">
+        <span class="role-emoji">${ri.e}</span>
+        <div class="role-name-tag ${ri.label||'civilian'}">${r.toUpperCase()}</div>
+        <p class="lede" style="margin:14px 0 20px;">${RDESC[r]||''}</p>
+        ${r==='Mafia'&&mafPals.length>0 ? `
+          <div class="obituary" style="border-left-color:var(--rust2);text-align:left;margin-bottom:16px;">
+            <div class="obit-head" style="color:var(--rust2);">Your Mafia Allies</div>
+            ${mafPals.map(p=>`<div class="obit-row"><span>🔪 ${esc(p.name)}</span></div>`).join('')}
+          </div>` : ''}
+        <div class="alert warn" style="text-align:left;margin-bottom:20px;">
+          🤫 Keep this role secret. Do not reveal it to other players.
+        </div>
+        <button class="btn" id="goBtnRoleReady">I UNDERSTAND →</button>
+      </div>
+    </div>
+  </div>`;
+}
+
+function nightWait() {
+  return `<div class="page fade">
+    <div class="card" style="max-width:420px;position:relative;">
+      <div class="phase-banner">🌑 Night ${S.nightNumber}</div>
+      <div style="text-align:center;padding:10px 0 20px;">
+        <div style="font-size:56px;margin-bottom:14px;" class="candle-anim">🕯️</div>
+        <h2>The Town Sleeps</h2>
+        <p class="lede" style="margin-bottom:20px;min-height:48px;">
+          ${S.loading ? '<span class="spin"></span>' : '<span id="narration-text"></span>'}
+        </p>
+        ${S.isHost && S.voiceEnabled ? `
+          <div style="margin-bottom:16px;">
+            <button class="mute-all-toggle ${S.voiceHostMuteAll?'active':''}" id="goBtnHostMuteToggle">
+              ${S.voiceHostMuteAll ? '🔇 All Muted' : '🎙 Open Mic for All'}
+            </button>
+          </div>` : ''}
+        <p style="font-family:'Special Elite',cursive;font-size:10px;letter-spacing:3px;color:var(--muted);text-transform:uppercase;">Those with special roles are being called upon</p>
+      </div>
+      <div class="night-num">${S.nightNumber}</div>
+    </div>
+  </div>`;
+}
+
+function nightAction() {
+  const type = S.nightActionType, targets = S.nightActionTargets, res = S.nightActionResult;
+  const INFO = {
+    'mafia-kill':          { icon:'🔪', label:'Mafia Awakens',      inst:'Choose your target for tonight:' },
+    'doctor-protect':      { icon:'💊', label:'Doctor Awakens',     inst:'Who will you protect tonight?' },
+    'detective-investigate':{ icon:'🔍', label:'Detective Awakens',  inst:'Investigate a suspect:' },
+    'cupid-link':          { icon:'💘', label:'Cupid Awakens',      inst:`Choose two people to link as lovers (${S.cupidPick.length}/2):` },
+  };
+  const { icon, label, inst } = INFO[type]||{icon:'❓',label:'',inst:''};
+  return `<div class="page fade">
+    <div class="card flip" style="max-width:420px;">
+      <div class="phase-banner">${icon} ${label}</div>
+      <p class="lede" style="margin-bottom:18px;">${inst}</p>
+      ${type==='detective-investigate' && res!==null ? `
+        <div style="text-align:center;padding:14px 0;" class="stamp">
+          <div style="font-size:48px;margin-bottom:10px;">${res?'🔴':'🟢'}</div>
+          <div style="font-family:'Playfair Display',serif;font-size:22px;font-weight:700;color:${res?'var(--rust)':'var(--forest)'};">
+            ${esc(S._detName)} is ${res?'MAFIA!':'not Mafia.'}
+          </div>
+          <p class="lede" style="margin:10px 0 20px;font-size:13px;">This information is yours alone. Guard it wisely.</p>
+          <button class="btn" id="goBtnDetConfirm">Understood →</button>
+        </div>
+      ` : `
+        <div class="choice-list stagger">
+          ${targets.map(p=>`
+            <button class="choice-btn ${type==='cupid-link'&&S.cupidPick.includes(p.id)?'selected':''}" data-act-id="${p.id}">
+              <span class="choice-marker">${type==='cupid-link'&&S.cupidPick.includes(p.id)?'♥':''}</span>
+              ${esc(p.name)}
+            </button>`).join('')}
+        </div>
+        ${type==='cupid-link'&&S.cupidPick.length===2 ? `<button class="btn success" id="goBtnCupidConfirm" style="margin-top:12px;">💘 Link These Two Souls →</button>` : ''}
+      `}
+    </div>
+  </div>`;
+}
+
+function dayPhase() {
+  const alive = S.players.filter(p=>p.alive);
+  return `<div class="page fade">
+    <div class="card" style="max-width:480px;">
+      <div class="phase-banner">☀️ Day ${S.nightNumber} · Morning Report</div>
+      ${S.nightDead.length>0 ? `
+        <div class="obituary">
+          <div class="obit-head">⚰️ Found Dead at Dawn</div>
+          ${S.nightDead.map(d=>`
+            <div class="obit-row">
+              <span>${esc(d.name)}</span>
+              <span style="font-size:12px;color:var(--muted);font-style:italic;">was ${d.role||'unknown'}</span>
+            </div>`).join('')}
+        </div>` :
+        `<div class="alert ok" style="margin-bottom:14px;">🌅 No deaths last night. The town breathes easy.</div>`
+      }
+      <p class="lede" style="margin-bottom:12px;min-height:44px;">
+        ${S.loading ? '<span class="spin"></span>' : '<span id="narration-text"></span>'}
+      </p>
+      <div class="divider">Still Alive</div>
+      <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:18px;">
+        ${alive.map(p=>`<span style="background:white;border:1px solid var(--border);border-radius:1px;padding:5px 12px;font-size:13px;font-family:'Special Elite',cursive;letter-spacing:.5px;">${esc(p.name)}</span>`).join('')}
+      </div>
+      <div class="alert info" style="margin-bottom:16px;">
+        💬 Discuss with your fellow citizens. Who is acting suspicious?
+      </div>
+      ${S.isHost && S.voiceEnabled ? `
+        <div style="margin-bottom:14px;text-align:center;">
+          <button class="mute-all-toggle ${S.voiceHostMuteAll?'active':''}" id="goBtnHostMuteToggle">
+            ${S.voiceHostMuteAll ? '🔇 Unmute All' : '🎙 Mute All'}
+          </button>
+        </div>` : ''}
+      ${S.isHost
+        ? `<button class="btn" id="goBtnBeginVote" ${S.loading?'disabled':''}>🗳 Open the Vote</button>`
+        : `<div style="text-align:center;padding:10px 0;"><span class="spin"></span>
+            <p style="font-family:'Special Elite',cursive;font-size:10px;letter-spacing:2px;color:var(--muted);margin-top:10px;text-transform:uppercase;">Waiting for the moderator…</p>
+           </div>`
+      }
+    </div>
+  </div>`;
+}
+
+function votePh() {
+  const myId = S.myId||'host';
+  const myVote = S.voteData[myId];
+  const alive = S.players.filter(p=>p.alive&&p.id!==myId);
+  if (myVote !== undefined) {
+    const tv = S.players.find(p=>p.id===myVote);
+    return `<div class="page fade"><div class="card" style="max-width:420px;">
+      <div class="phase-banner">⚖️ The Vote · Ballot Cast</div>
+      <p class="lede" style="margin-bottom:18px;">You voted for <strong>${tv?esc(tv.name):'abstain'}</strong>. Waiting for others…</p>
+      ${buildVoteBars()}
+      <div style="text-align:center;margin-top:14px;"><span class="spin"></span></div>
     </div></div>`;
   }
-  return `<div class="page fade"><div class="card">
-    <div style="text-align:center;margin-bottom:18px;">
-      <div style="font-size:46px;margin-bottom:10px;">⚖️</div>
-      <h2>Cast Your Vote</h2>
-      <p class="italic">Who among you hides in shadow?</p>
+  return `<div class="page fade"><div class="card" style="max-width:420px;">
+    <div class="phase-banner">⚖️ The Vote · Cast Your Ballot</div>
+    <p class="lede" style="margin-bottom:18px;">Who among you is a killer? Choose wisely — or be deceived.</p>
+    <div class="choice-list stagger">
+      ${alive.map(p=>`<button class="choice-btn vote-btn" data-vote-id="${p.id}"><span class="choice-marker"></span>${esc(p.name)}</button>`).join('')}
+      <div class="divider" style="margin:10px 0;"></div>
+      <button class="choice-btn vote-btn" data-vote-id="__skip__" style="color:var(--muted);"><span class="choice-marker"></span>Abstain</button>
     </div>
-    ${alive.map(p=>`<button class="target-btn vote-btn" data-vote-id="${p.id}">${esc(p.name)}</button>`).join('')}
-    <div class="divider"></div>
-    <button class="target-btn vote-btn" data-vote-id="__skip__" style="text-align:center;color:var(--muted);">○ Abstain</button>
   </div></div>`;
 }
 
-function voteResult(){
-  const v=S.votedOut;
-  return `<div class="page fade"><div class="card" style="text-align:center;">
-    <div style="font-size:52px;margin-bottom:12px;">${v?'⚖️':'🤷'}</div>
-    <h2>${v?`${esc(v.name)} Eliminated!`:'Tied Vote'}</h2>
-    ${v?`<p style="color:${RI[v.role]?.c||'#888'};font-size:17px;margin:8px 0 16px;">${RI[v.role]?.e} They were a <strong>${v.role}</strong></p>`:''}
-    <p class="italic" style="margin-bottom:20px;">${S.loading?'<span class="spin"></span>':S.narration?`❝${S.narration}❞`:''}</p>
-    ${!S.loading&&!S.winner&&S.isHost?`<button class="btn" id="goBtnNextNight">🌑 BEGIN NIGHT ${S.nightNumber+1}</button>`:''}
-    ${!S.loading&&!S.winner&&!S.isHost?`<p style="color:var(--muted);font-style:italic;margin-top:8px;">Waiting for the innkeeper…</p>`:''}
-  </div></div>`;
+function buildVoteBars() {
+  const alive = S.players.filter(p=>p.alive);
+  const total = alive.length||1;
+  const counts = {};
+  alive.forEach(p=>{const v=S.voteData[p.id];if(v&&v!=='__abstain__')counts[v]=(counts[v]||0)+1;});
+  const cast = Object.keys(S.voteData).length;
+  if (!cast) return '';
+  return `<div class="vote-tally">
+    <div class="vote-tally-head">Votes Cast: ${cast} / ${total}</div>
+    ${alive.map(p=>{
+      const n=counts[p.id]||0, pct=Math.round(n/total*100);
+      return `<div class="vote-entry">
+        <div class="vote-entry-label"><span>${esc(p.name)}</span><span>${n}</span></div>
+        <div class="vote-track"><div class="vote-fill" style="width:${pct}%"></div></div>
+      </div>`;
+    }).join('')}
+  </div>`;
 }
 
-function gameOver(){
-  const wc={Town:'#27ae60',Mafia:'#c0392b',Jester:'#d35400'};
-  const we={Town:'🏘️',Mafia:'🔪',Jester:'🃏'};
+function voteResult() {
+  const v = S.votedOut;
   return `<div class="page fade">
-    <div class="card" style="text-align:center;">
-      <div style="font-size:68px;margin-bottom:12px;">${we[S.winner]||'🏘️'}</div>
-      <h1 style="color:${wc[S.winner]||'#888'};font-size:28px;margin-bottom:14px;">${S.winner} Wins!</h1>
-      <p class="italic" style="margin-bottom:20px;">${S.loading?'<span class="spin"></span>':S.narration?`❝${S.narration}❞`:''}</p>
-      ${S.players.length>0?`
-        <div class="divider"></div>
-        <p style="font-size:11px;letter-spacing:2px;color:var(--muted);margin-bottom:10px;">FINAL ROLES REVEALED</p>
-        ${S.players.map(p=>`
-          <div class="player-row ${p.alive?'':'dead-row'}">
-            <span style="flex:1;">${esc(p.name)}${p.alive?'':' ☠️'}</span>
-            <span style="color:${RI[p.role]?.c||'#888'};font-size:14px;">${RI[p.role]?.e||''} ${p.role||'?'}</span>
-          </div>`).join('')}
-      `:''}
-      <div class="divider"></div>
-      <button class="btn" id="goBtnPlayAgain">🔄 PLAY AGAIN</button>
+    <div class="card" style="max-width:420px;text-align:center;">
+      <div class="phase-banner">⚖️ Verdict</div>
+      <div class="role-reveal" style="padding:10px 0 16px;">
+        <span class="role-emoji" style="font-size:52px;margin-bottom:10px;">${v?'🪓':'🤷'}</span>
+        <h2 style="margin-bottom:8px;">${v?`${esc(v.name)} Eliminated`:'A Tied Vote'}</h2>
+        ${v?`<p style="font-size:14px;color:var(--muted);margin-bottom:14px;font-style:italic;">They were a ${v.role}.</p>`:''}
+        <p class="lede" style="margin-bottom:20px;min-height:44px;">
+          ${S.loading?'<span class="spin"></span>':'<span id="narration-text"></span>'}
+        </p>
+        ${!S.loading&&!S.winner&&S.isHost?`<button class="btn" id="goBtnNextNight">🌑 Begin Night ${S.nightNumber+1}</button>`:''}
+        ${!S.loading&&!S.winner&&!S.isHost?`<p style="font-family:'Special Elite',cursive;font-size:10px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;">Waiting for the moderator…</p>`:''}
+      </div>
     </div>
   </div>`;
 }
 
-// ─── BIND ─────────────────────────────────────────────────────────────────────
-function bind(){
-  const on=(id,fn)=>{const el=document.getElementById(id);if(el)el.addEventListener('click',fn);};
-  on('goBtnStart',()=>{S.screen='name';S.error='';render();});
-  on('goBtnBackWelcome',()=>{S.screen='welcome';render();});
-  on('goBtnNameNext',()=>{
-    const v=document.getElementById('inp-name')?.value.trim();
-    if(!v){S.error='Please enter your name.';render();return;}
-    S.playerName=v;S.error='';
-    const fromLink=new URLSearchParams(location.search).get('room');
-    if(fromLink){S.roomCode=fromLink.toUpperCase();S.screen='join';}
+function gameOver() {
+  const wc = { Town:['town',var_(--forest)], Mafia:['mafia',var_(--rust)], Jester:['jester','#8b5e00'] };
+  const we = { Town:'🏘️', Mafia:'🔪', Jester:'🃏' };
+  const [wClass] = wc[S.winner]||['town'];
+  return `<div class="page fade">
+    <div class="card" style="max-width:480px;">
+      <div class="phase-banner">📰 Final Edition · The Town Speaks</div>
+      <div style="text-align:center;padding:14px 0 20px;">
+        <div style="font-size:64px;margin-bottom:12px;" class="candle-anim">${we[S.winner]||'🏘️'}</div>
+        <div class="winner-banner ${wClass}">${S.winner} Wins!</div>
+        <p class="lede" style="margin:10px 0 20px;min-height:44px;">
+          ${S.loading?'<span class="spin"></span>':'<span id="narration-text"></span>'}
+        </p>
+      </div>
+      <div class="divider">Final Roles Revealed</div>
+      <div class="player-list stagger">
+        ${S.players.map(p=>`
+          <div class="player-row ${p.alive?'':'dead'}">
+            <span class="player-name">${esc(p.name)}${p.alive?'':' ☠️'}</span>
+            <span class="player-badge">${ROLES[p.role]?.e||''} ${p.role||'?'}</span>
+          </div>`).join('')}
+      </div>
+      <div class="divider"></div>
+      <button class="btn" id="goBtnPlayAgain">🔄 Play Again</button>
+    </div>
+  </div>`;
+}
+
+function var_(x){return x;} // dummy to silence linter
+
+/* ══════════════════════════════════════════════
+   BIND
+   ══════════════════════════════════════════════ */
+function bind() {
+  const on = (id,fn)=>{ const el=document.getElementById(id); if(el) el.addEventListener('click',fn); };
+  on('goBtnStart',      ()=>transition(()=>{S.screen='name';S.error='';render();}));
+  on('goBtnBackWelcome',()=>transition(()=>{S.screen='welcome';render();}));
+  on('goBtnBackMode',   ()=>transition(()=>{S.screen='mode';S.error='';S.loading=false;render();}));
+  on('goBtnJoin',       ()=>transition(()=>{S.screen='join';S.error='';render();}));
+  on('goBtnNameNext',   ()=>{
+    const v = document.getElementById('inp-name')?.value.trim();
+    if (!v){S.error='Please enter your name.';render();return;}
+    S.playerName=v; S.error='';
+    const fromLink = new URLSearchParams(location.search).get('room');
+    if (fromLink){S.roomCode=fromLink.toUpperCase();S.screen='join';}
     else S.screen='mode';
-    render();
+    transition(()=>render());
   });
-  on('goBtnBackMode',()=>{S.screen='mode';S.error='';S.loading=false;render();});
-  on('goBtnCreate',createRoom);
-  on('goBtnJoin',()=>{S.screen='join';S.error='';render();});
-  on('goBtnJoinConnect',doJoin);
-  on('goBtnCopyLink',()=>{
+  on('goBtnCreate',      createRoom);
+  on('goBtnJoinConnect', doJoin);
+  on('goBtnCopyLink',    ()=>{
     const link=`${location.origin}${location.pathname}?room=${S.roomCode}`;
     navigator.clipboard.writeText(link).then(()=>{
       const b=document.getElementById('goBtnCopyLink');
-      if(b){b.textContent='✓ COPIED';setTimeout(()=>{const bb=document.getElementById('goBtnCopyLink');if(bb)bb.textContent='COPY';},2000);}
-    }).catch(()=>{prompt('Copy this link:',link);});
+      if(b){b.textContent='✓ COPIED';setTimeout(()=>{const bb=document.getElementById('goBtnCopyLink');if(bb)bb.textContent='COPY LINK';},2000);}
+    }).catch(()=>prompt('Copy this link:',link));
   });
-  on('goBtnHostStart',hostStartGame);
-  on('goBtnRoleReady',()=>{
-    if(S.isHost){
-      S._rolesReady++;
-      S.phase='night';S.loading=true;render();
-      checkAllRolesReady();
-    }else{
-      S.conn.send({type:'role-seen'});
-      S.phase='night';S.loading=true;render();
-    }
+  on('goBtnHostStart',      hostStartGame);
+  on('goBtnRoleReady',      ()=>{
+    if(S.isHost){S._rolesReady++;S.phase='night';S.loading=true;render();checkAllRolesReady();}
+    else{S.conn.send({type:'role-seen'});S.phase='night';S.loading=true;render();}
   });
-  on('goBtnDetConfirm',()=>{sendNightAction(S.nightActionType,S._detTarget);});
-  on('goBtnCupidConfirm',()=>{if(S.cupidPick.length===2)sendNightAction('cupid-link',S.cupidPick);});
-  on('goBtnBeginVote',()=>{if(S.isHost)hostBeginVoting();});
-  on('goBtnNextNight',()=>{if(S.isHost){S.nightNumber++;hostBeginNight();}});
-  on('goBtnPlayAgain',()=>{location.href=location.pathname;});
+  on('goBtnDetConfirm',     ()=>sendNightAction(S.nightActionType,S._detTarget));
+  on('goBtnCupidConfirm',   ()=>{if(S.cupidPick.length===2)sendNightAction('cupid-link',S.cupidPick);});
+  on('goBtnBeginVote',      ()=>{if(S.isHost)hostBeginVoting();});
+  on('goBtnNextNight',      ()=>{if(S.isHost){S.nightNumber++;hostBeginNight();}});
+  on('goBtnPlayAgain',      ()=>{VOICE.destroy();location.href=location.pathname;});
+  on('goBtnHostMuteToggle', ()=>{if(S.isHost){VOICE.setGlobalMute(!S.voiceHostMuteAll);render();}});
 
-  const ni=document.getElementById('inp-name');
-  if(ni){ni.addEventListener('keydown',e=>{if(e.key==='Enter')document.getElementById('goBtnNameNext')?.click();});setTimeout(()=>ni.focus(),60);}
-  const ci=document.getElementById('inp-code');
-  if(ci){ci.addEventListener('keydown',e=>{if(e.key==='Enter')document.getElementById('goBtnJoinConnect')?.click();});
+  // Voice bar
+  const vbMic = document.getElementById('vb-mic');
+  if (vbMic) vbMic.addEventListener('click',()=>{
+    S.voiceSelfMuted=!S.voiceSelfMuted; VOICE.applyAll(); updateVoiceBar();
+  });
+  const vbEn = document.getElementById('vb-enable');
+  if (vbEn) vbEn.addEventListener('click', async()=>{ await VOICE.init(); render(); });
+
+  // Name input enter
+  const ni = document.getElementById('inp-name');
+  if (ni){ ni.addEventListener('keydown',e=>{if(e.key==='Enter')document.getElementById('goBtnNameNext')?.click();}); setTimeout(()=>ni.focus(),80); }
+  const ci = document.getElementById('inp-code');
+  if (ci){
+    ci.addEventListener('keydown',e=>{if(e.key==='Enter')document.getElementById('goBtnJoinConnect')?.click();});
     ci.addEventListener('input',e=>{e.target.value=e.target.value.toUpperCase();});
-    setTimeout(()=>ci.focus(),60);}
+    setTimeout(()=>ci.focus(),80);
+  }
 
+  // Action buttons
   document.querySelectorAll('[data-act-id]').forEach(btn=>{
     btn.addEventListener('click',()=>{
       const id=btn.dataset.actId;
       if(S.nightActionType==='cupid-link'){
-        if(S.cupidPick.includes(id))S.cupidPick=S.cupidPick.filter(x=>x!==id);
-        else if(S.cupidPick.length<2)S.cupidPick.push(id);
+        if(S.cupidPick.includes(id)) S.cupidPick=S.cupidPick.filter(x=>x!==id);
+        else if(S.cupidPick.length<2) S.cupidPick.push(id);
         render();
-      }else if(S.nightActionType==='detective-investigate'){
+      } else if(S.nightActionType==='detective-investigate'){
         const t=S.nightActionTargets.find(p=>p.id===id);
-        S.nightActionResult=t?.isMafia||false;
-        S._detName=t?.name||'';
-        S._detTarget=id;
-        render();
-      }else{
+        S.nightActionResult=t?.isMafia||false; S._detName=t?.name||''; S._detTarget=id; render();
+      } else {
         sendNightAction(S.nightActionType,id);
       }
     });
   });
-
   document.querySelectorAll('[data-vote-id]').forEach(btn=>{
     btn.addEventListener('click',()=>{
       const id=btn.dataset.voteId==='__skip__'?null:btn.dataset.voteId;
@@ -505,146 +1677,171 @@ function bind(){
 
 window.adjSetting=function(role,d){
   S.settings[role]=Math.max(role==='mafia'?1:0,S.settings[role]+d);
-  const el=document.getElementById('sval-'+role);
-  if(el)el.textContent=S.settings[role];
-  if(S.isHost)broadcastLobby();
+  const el=document.getElementById('sval-'+role); if(el) el.textContent=S.settings[role];
+  if(S.isHost) broadcastLobby();
+};
+window.hostToggleMute=function(pid){
+  S.voicePlayerMutes[pid]=!S.voicePlayerMutes[pid];
+  const conn=S.conns[pid]; if(conn) conn.send({type:'voice-muted-by-host',muted:S.voicePlayerMutes[pid]});
+  if(VOICE.audios[pid]) VOICE.audios[pid].muted=S.voicePlayerMutes[pid];
+  render();
 };
 
-// ─── PEER / NETWORK ───────────────────────────────────────────────────────────
+/* ══════════════════════════════════════════════
+   NETWORKING — PeerJS with fallbacks
+   ══════════════════════════════════════════════ */
 function genCode(){
   const c='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-  let s='';for(let i=0;i<6;i++)s+=c[Math.floor(Math.random()*c.length)];return s;
+  let s=''; for(let i=0;i<6;i++) s+=c[Math.floor(Math.random()*c.length)]; return s;
 }
 
-function createRoom(retryCount,cfgIdx){
-  retryCount=retryCount||0;cfgIdx=cfgIdx||0;
-  const code=genCode();
-  S.roomCode=code;S.isHost=true;S.myId='host';
-  S.loading=true;S.error='';
-  history.replaceState(null,'',location.pathname+'?room='+code);
-  render(); // show spinner — no more silent freeze
+// PeerJS configs tried in order
+const PCONFIGS = [
+  { host:'0.peerjs.com', port:443, path:'/', secure:true, debug:0 },
+  { host:'peerjs.com',   port:443, path:'/', secure:true, debug:0 },
+  null  // PeerJS default (falls back to peerjs.com automatically)
+];
 
-  if(S.peer){try{S.peer.destroy();}catch(e){}}
+function makePeer(id, cfgIdx, cb) {
+  cfgIdx = cfgIdx||0;
+  if (cfgIdx >= PCONFIGS.length) { cb(null,'No broker available. Check your internet connection.'); return; }
+  let p;
+  try {
+    const cfg = PCONFIGS[cfgIdx];
+    p = (id && cfg) ? new Peer(id, cfg) : (id ? new Peer(id) : (cfg ? new Peer(cfg) : new Peer()));
+  } catch(e) { makePeer(id, cfgIdx+1, cb); return; }
 
-  const cfg=PEER_CONFIGS[cfgIdx%PEER_CONFIGS.length];
-  S.peer=cfg?new Peer('maf-'+code.toLowerCase(),cfg):new Peer('maf-'+code.toLowerCase());
+  const tid = setTimeout(()=>{
+    try{p.destroy();}catch(e){}
+    makePeer(id, cfgIdx+1, cb);
+  }, 8000);
 
-  // Hard 10-second timeout
-  const tid=setTimeout(()=>{
-    if(!S.loading)return;
-    try{S.peer.destroy();}catch(e){}
-    if(cfgIdx<PEER_CONFIGS.length-1){
-      createRoom(retryCount,cfgIdx+1); // try next broker config
-    }else{
+  p.on('open', ()=>{ clearTimeout(tid); cb(p, null); });
+  p.on('error', err=>{
+    clearTimeout(tid);
+    if (err.type==='unavailable-id'){ cb(null,'unavailable-id'); return; }
+    try{p.destroy();}catch(e){}
+    makePeer(id, cfgIdx+1, cb);
+  });
+}
+
+function createRoom(retryCount) {
+  retryCount = retryCount||0;
+  const code = genCode();
+  S.roomCode = code; S.isHost = true; S.myId = 'host';
+  S.loading = true; S.error = ''; S.screen = 'mode'; render();
+
+  if (S.peer){try{S.peer.destroy();}catch(e){}}
+
+  makePeer('maf-'+code.toLowerCase(), 0, (p, err)=>{
+    if (err==='unavailable-id' && retryCount<5){ createRoom(retryCount+1); return; }
+    if (!p){
       S.loading=false;
-      S.error='Could not reach game server. Check your connection and try again.';
-      render();
+      S.error='Could not connect to game server. Please check your internet connection and try again.';
+      S.screen='mode'; render(); return;
     }
-  },10000);
+    S.peer = p;
+    S.loading = false;
+    S.lobbyPlayers = [{ id:'host', name:S.playerName, isHost:true, connected:true, peerId:'maf-'+code.toLowerCase() }];
+    S.screen = 'lobby'; render();
 
-  S.peer.on('open',()=>{
-    clearTimeout(tid);
-    S.loading=false;
-    S.lobbyPlayers=[{id:'host',name:S.playerName,isHost:true,connected:true}];
-    S.screen='lobby';render();
-  });
-  S.peer.on('error',err=>{
-    clearTimeout(tid);
-    if(err.type==='unavailable-id'&&retryCount<5){createRoom(retryCount+1,cfgIdx);return;}
-    if((err.type==='network'||err.type==='server-error')&&cfgIdx<PEER_CONFIGS.length-1){createRoom(retryCount,cfgIdx+1);return;}
-    S.loading=false;
-    S.error='Connection error ('+(err.type||'unknown')+'). Try refreshing.';
-    render();
-  });
-  S.peer.on('connection',conn=>{
-    conn.on('open',()=>{
-      S.conns[conn.peer]=conn;
-      conn.on('data',msg=>hostOnMsg(conn,msg));
-      conn.on('close',()=>{
-        const p=S.lobbyPlayers.find(x=>x.id===conn.peer);
-        if(p)p.connected=false;
-        delete S.conns[conn.peer];
-        if(S.screen==='lobby')render();
+    p.on('connection', conn=>{
+      conn.on('open',()=>{
+        S.conns[conn.peer]=conn;
+        conn.on('data', msg=>hostOnMsg(conn,msg));
+        conn.on('close',()=>{
+          const pl=S.lobbyPlayers.find(x=>x.id===conn.peer);
+          if(pl) pl.connected=false;
+          delete S.conns[conn.peer];
+          if(S.screen==='lobby') render();
+        });
       });
     });
+    p.on('call', call=>VOICE.answerCall(call));
   });
 }
 
-function doJoin(){
-  const code=(document.getElementById('inp-code')?.value||'').trim().toUpperCase();
-  if(!code||code.length<4){S.error='Please enter a valid room code.';render();return;}
-  S.roomCode=code;S.isHost=false;S.loading=true;S.error='';render();
+function doJoin() {
+  const code = (document.getElementById('inp-code')?.value||'').trim().toUpperCase();
+  if (!code||code.length<4){ S.error='Please enter a valid room code.'; render(); return; }
+  S.roomCode=code; S.isHost=false; S.loading=true; S.error=''; render();
+  if (S.peer){try{S.peer.destroy();}catch(e){}}
 
-  if(S.peer){try{S.peer.destroy();}catch(e){}}
-
-  const cfg=PEER_CONFIGS[0];
-  S.peer=cfg?new Peer(cfg):new Peer();
-
-  const tid=setTimeout(()=>{
-    if(!S.loading)return;
-    try{S.peer.destroy();}catch(e){}
-    S.loading=false;S.error='Could not reach game server. Check your connection.';S.screen='join';render();
-  },10000);
-
-  S.peer.on('open',()=>{
-    S.myId=S.peer.id;
-    S.conn=S.peer.connect('maf-'+code.toLowerCase(),{reliable:true});
+  makePeer(null, 0, (p, err)=>{
+    if (!p){
+      S.loading=false; S.error='Could not connect to game server. Check your internet and try again.'; S.screen='join'; render(); return;
+    }
+    S.peer=p; S.myId=p.id;
+    const hostId='maf-'+code.toLowerCase();
+    const conn=p.connect(hostId,{reliable:true});
     const ctid=setTimeout(()=>{
-      if(S.loading){S.loading=false;S.error='Could not connect. Check the room code.';S.screen='join';render();}
-    },8000);
-    S.conn.on('open',()=>{
-      clearTimeout(tid);clearTimeout(ctid);
-      S.loading=false;
-      S.conn.send({type:'join',name:S.playerName});
-      S.screen='lobby';render();
+      if(S.loading){ S.loading=false; S.error='Could not connect — check the room code.'; S.screen='join'; render(); }
+    },9000);
+    conn.on('open',()=>{
+      clearTimeout(ctid); S.loading=false; S.conn=conn;
+      conn.send({type:'join',name:S.playerName,peerId:p.id});
+      S.screen='lobby'; render();
     });
-    S.conn.on('data',msg=>guestOnMsg(msg));
-    S.conn.on('close',()=>{
-      if(S.phase!=='over'){S.error='Lost connection to host.';S.screen='join';S.loading=false;render();}
-    });
-    S.conn.on('error',()=>{clearTimeout(tid);clearTimeout(ctid);S.error='Could not connect. Check the room code.';S.loading=false;S.screen='join';render();});
+    conn.on('data', msg=>guestOnMsg(msg));
+    conn.on('close',()=>{ if(S.phase!=='over'){S.error='Lost connection to host.';S.screen='join';S.loading=false;render();} });
+    conn.on('error',()=>{ clearTimeout(ctid); S.error='Connection failed. Check the room code.'; S.loading=false; S.screen='join'; render(); });
+    p.on('call', call=>VOICE.answerCall(call));
   });
-  S.peer.on('error',err=>{clearTimeout(tid);S.error='Connection failed: '+(err.message||err.type||'unknown');S.loading=false;S.screen='join';render();});
 }
 
-function broadcast(msg){Object.values(S.conns).forEach(c=>{try{c.send(msg);}catch(e){}});}
-function broadcastLobby(){broadcast({type:'lobby',players:S.lobbyPlayers,settings:S.settings});}
+function broadcast(msg){ Object.values(S.conns).forEach(c=>{try{c.send(msg);}catch(e){}}); }
+function broadcastLobby(){ broadcast({type:'lobby',players:S.lobbyPlayers,settings:S.settings}); }
 
-// ─── HOST MSG ─────────────────────────────────────────────────────────────────
+/* ══════════════════════════════════════════════
+   HOST MESSAGE HANDLER
+   ══════════════════════════════════════════════ */
 function hostOnMsg(conn,msg){
   if(msg.type==='join'){
     const id=conn.peer;
     const ex=S.lobbyPlayers.find(p=>p.id===id);
-    if(ex){ex.connected=true;ex.name=msg.name;}
-    else S.lobbyPlayers.push({id,name:msg.name,isHost:false,connected:true});
-    broadcastLobby();render();
-  }else if(msg.type==='role-seen'){
-    S._rolesReady++;checkAllRolesReady();
-  }else if(msg.type==='night-action'){
-    hostProcessAction(conn.peer,msg.actionType,msg.target);
-  }else if(msg.type==='vote'){
-    hostProcessVote(conn.peer,msg.targetId);
+    if(ex){ex.connected=true;ex.name=msg.name;ex.peerId=msg.peerId||id;}
+    else S.lobbyPlayers.push({id,name:msg.name,isHost:false,connected:true,peerId:msg.peerId||id});
+    // Tell everyone about the new peer
+    const newPid=msg.peerId||id;
+    Object.values(S.conns).forEach(c=>{if(c.peer!==id){try{c.send({type:'peer-joined',peerId:newPid});}catch(e){}}});
+    // Tell new player about existing peers
+    const existing=S.lobbyPlayers.filter(p=>p.id!==id&&p.peerId).map(p=>p.peerId);
+    conn.send({type:'existing-peers',peers:existing});
+    broadcastLobby(); render();
   }
+  else if(msg.type==='role-seen'){ S._rolesReady++; checkAllRolesReady(); }
+  else if(msg.type==='night-action'){ hostProcessAction(conn.peer,msg.actionType,msg.target); }
+  else if(msg.type==='vote'){ hostProcessVote(conn.peer,msg.targetId); }
+  else if(msg.type==='speaking'){ S.voiceSpeaking[msg.id]=msg.val; broadcast(msg); renderSpeakDots(); }
+  else if(msg.type==='voice-ready'){ if(VOICE.stream&&msg.peerId) VOICE.callPeer(msg.peerId); }
 }
 
-function checkAllRolesReady(){
-  if(S._rolesReady>=S._totalPlayers){S._rolesReady=0;hostBeginNight();}
-}
+function checkAllRolesReady(){ if(S._rolesReady>=S._totalPlayers){S._rolesReady=0;hostBeginNight();} }
 
-// ─── GUEST MSG ────────────────────────────────────────────────────────────────
+/* ══════════════════════════════════════════════
+   GUEST MESSAGE HANDLER
+   ══════════════════════════════════════════════ */
 function guestOnMsg(msg){
   if(msg.type==='lobby'){S.lobbyPlayers=msg.players;S.settings=msg.settings;S.screen='lobby';render();}
-  else if(msg.type==='game-start'){S.myRole=msg.role;S.players=msg.players;S.phase='roleReveal';S.screen='game';render();}
+  else if(msg.type==='game-start'){S.myRole=msg.role;S.players=msg.players;S.phase='roleReveal';S.screen='game';transition(()=>render());}
   else if(msg.type==='night-begin'){S.nightNumber=msg.nightNumber;S.phase='night';S.narration='';S.loading=true;render();}
   else if(msg.type==='night-start'){S.phase='night';S.narration=msg.narration||'';S.loading=false;S.nightNumber=msg.nightNumber||S.nightNumber;S.nightActionType=null;S.nightActionResult=null;S.cupidPick=[];render();}
   else if(msg.type==='your-turn'){S.phase='nightAction';S.nightActionType=msg.actionType;S.nightActionTargets=msg.targets;S.nightActionResult=null;S.cupidPick=[];render();}
-  else if(msg.type==='day-start'){S.phase='day';S.nightDead=msg.dead;S.narration=msg.narration;S.loading=false;S.players=msg.players;S.nightNumber=msg.nightNumber;render();}
+  else if(msg.type==='day-start'){S.phase='day';S.nightDead=msg.dead;S.narration=msg.narration;S.loading=false;S.players=msg.players;S.nightNumber=msg.nightNumber;transition(()=>render());}
   else if(msg.type==='vote-start'){S.phase='vote';S.voteData={};S.players=msg.players;render();}
+  else if(msg.type==='vote-update'){S.voteData=msg.voteData||S.voteData;render();}
   else if(msg.type==='vote-result'){S.phase='voteResult';S.votedOut=msg.eliminated;S.narration=msg.narration;S.loading=false;S.players=msg.players;S.winner=msg.winner||null;render();}
-  else if(msg.type==='game-over'){S.phase='over';S.winner=msg.winner;S.narration=msg.narration;S.loading=false;S.players=msg.players;S.screen='game';render();}
+  else if(msg.type==='game-over'){S.phase='over';S.winner=msg.winner;S.narration=msg.narration;S.loading=false;S.players=msg.players;S.screen='game';transition(()=>render());}
+  else if(msg.type==='voice-global-mute'){S.voiceMutedByHost=msg.muted;VOICE.applyAll();updateVoiceBar();}
+  else if(msg.type==='voice-muted-by-host'){S.voiceMutedByHost=msg.muted;VOICE.applyAll();updateVoiceBar();}
+  else if(msg.type==='speaking'){S.voiceSpeaking[msg.id]=msg.val;renderSpeakDots();}
+  else if(msg.type==='peer-joined'){if(VOICE.stream)VOICE.callPeer(msg.peerId);}
+  else if(msg.type==='existing-peers'){if(VOICE.stream)msg.peers.forEach(pid=>{if(pid!==S.peer?.id)VOICE.callPeer(pid);});}
 }
 
-// ─── GAME LOGIC (HOST) ────────────────────────────────────────────────────────
+/* ══════════════════════════════════════════════
+   GAME LOGIC (HOST)
+   ══════════════════════════════════════════════ */
 async function hostStartGame(){
   const pl=S.lobbyPlayers;
   if(pl.length<4){S.error='Need at least 4 players!';render();return;}
@@ -657,30 +1854,32 @@ async function hostStartGame(){
   if(cfg.detective)roles.push('Detective');
   if(cfg.cupid)roles.push('Cupid');
   if(cfg.jester)roles.push('Jester');
-  while(roles.length<pl.length)roles.push('Villager');
+  while(roles.length<pl.length)roles.push('Civilian');
   const shuffled=shuffle(roles);
   S.players=pl.map((p,i)=>({id:p.id,name:p.name,role:shuffled[i],alive:true}));
   S.lovers=[];S.nightNumber=1;S.nightActions={};
   S._totalPlayers=pl.length;S._rolesReady=0;
+  if(VOICE.stream)VOICE.setGlobalMute(true);
   S.players.forEach(player=>{
-    const visPlayers=S.players.map(p=>({
+    const vis=S.players.map(p=>({
       id:p.id,name:p.name,alive:p.alive,
       role:(p.id===player.id||(player.role==='Mafia'&&p.role==='Mafia'))?p.role:undefined
     }));
-    const gmsg={type:'game-start',role:player.role,players:visPlayers};
     if(player.id==='host'){S.myRole=player.role;S.screen='game';S.phase='roleReveal';}
-    else S.conns[player.id]?.send(gmsg);
+    else S.conns[player.id]?.send({type:'game-start',role:player.role,players:vis});
   });
-  render();
+  transition(()=>render());
 }
 
 async function hostBeginNight(){
-  S.nightActions={};S._nightQ=[];S.phase='night';S.loading=true;render();
+  S.nightActions={};S._nightQ=[];S.phase='night';S.loading=true;
+  if(VOICE.stream)VOICE.setGlobalMute(true);
+  render();
   broadcast({type:'night-begin',nightNumber:S.nightNumber});
-  const t=await callGM(`Mafia Game Master. Night ${S.nightNumber} begins. One short chilling sentence about darkness falling on the village.`);
-  S._nightNarration=t;S.narration=t;S.loading=false;
+  const t=await callGM(`Mafia Game Master. Night ${S.nightNumber} begins in a small town. One short atmospheric sentence about darkness falling.`);
+  S.narration=t;S.loading=false;
   broadcast({type:'night-start',narration:t,nightNumber:S.nightNumber});
-  render();buildAndRunNightQueue();
+  render(); buildAndRunNightQueue();
 }
 
 function buildAndRunNightQueue(){
@@ -689,7 +1888,7 @@ function buildAndRunNightQueue(){
   const mafia=alive.filter(p=>p.role==='Mafia');if(mafia.length>0)q.push(mafia[0]);
   const doc=alive.find(p=>p.role==='Doctor');if(doc)q.push(doc);
   const det=alive.find(p=>p.role==='Detective');if(det)q.push(det);
-  S._nightQ=[...q];runNextNightActor();
+  S._nightQ=[...q]; runNextNightActor();
 }
 
 function runNextNightActor(){
@@ -703,7 +1902,7 @@ function runNextNightActor(){
   else if(actor.role==='Detective'){actionType='detective-investigate';targets=others.map(p=>({id:p.id,name:p.name,isMafia:p.role==='Mafia'}));}
   if(actor.id==='host'){
     S.phase='nightAction';S.nightActionType=actionType;S.nightActionTargets=targets;S.nightActionResult=null;S.cupidPick=[];render();
-  }else{
+  } else {
     S.conns[actor.id]?.send({type:'your-turn',actionType,targets});S.phase='night';render();
   }
 }
@@ -731,18 +1930,19 @@ async function hostResolveNight(){
     const t=S.players.find(p=>p.id===na.mafiaTarget&&p.alive);if(t)dead.push(t);
   }
   const seen=new Set(dead.map(d=>d.id));let chg=true;
-  while(chg){chg=false;[...dead].forEach(d=>{if(S.lovers.includes(d.id)){S.lovers.forEach(lid=>{if(lid!==d.id&&!seen.has(lid)){const p=S.players.find(x=>x.id===lid&&x.alive);if(p){dead.push(p);seen.add(lid);chg=true;}}});}}); }
+  while(chg){chg=false;[...dead].forEach(d=>{if(S.lovers.includes(d.id)){S.lovers.forEach(lid=>{if(lid!==d.id&&!seen.has(lid)){const p=S.players.find(x=>x.id===lid&&x.alive);if(p){dead.push(p);seen.add(lid);chg=true;}}});}});}
   const deadSet=new Set(dead.map(d=>d.id));
   S.players=S.players.map(p=>({...p,alive:deadSet.has(p.id)?false:p.alive}));
   S.nightDead=dead;S.nightActions={};S.loading=true;render();
   const w=checkWin(S.players);
   const prompt=dead.length===0
-    ?`Mafia Game Master. Night ${S.nightNumber}: Doctor saved the target. One eerie sentence about a peaceful dawn.`
-    :`Mafia Game Master. Night ${S.nightNumber}: Found dead at dawn: ${dead.map(d=>d.name).join(', ')}. 2 atmospheric sentences.`;
+    ?`Mafia game narration. Night ${S.nightNumber}: the doctor saved someone. One eerie sentence about a peaceful dawn in a suspicious town.`
+    :`Mafia game narration. Night ${S.nightNumber}: found dead at dawn: ${dead.map(d=>d.name).join(', ')}. Two atmospheric sentences for a town morning newspaper.`;
   const t=await callGM(prompt);S.narration=t;S.loading=false;
   if(w){await hostEndGame(w);return;}
+  if(VOICE.stream)VOICE.setGlobalMute(false);
   const dayMsg={type:'day-start',dead:dead.map(d=>({id:d.id,name:d.name,role:d.role})),narration:t,players:S.players.map(p=>({id:p.id,name:p.name,alive:p.alive})),nightNumber:S.nightNumber};
-  broadcast(dayMsg);S.phase='day';render();
+  broadcast(dayMsg);S.phase='day';transition(()=>render());
 }
 
 function hostBeginVoting(){
@@ -753,18 +1953,21 @@ function hostBeginVoting(){
 }
 
 function submitVote(targetId){
-  const voteVal=targetId===null?'__abstain__':targetId;
-  S.voteData[S.myId]=voteVal;render();
+  const myId=S.myId||'host';
+  const vv=targetId===null?'__abstain__':targetId;
+  S.voteData[myId]=vv;render();
   if(S.isHost)hostProcessVote('host',targetId);
   else S.conn.send({type:'vote',targetId});
 }
 
 function hostProcessVote(voterId,targetId){
-  const voteVal=targetId===null?'__abstain__':targetId;
-  S.voteData[voterId]=voteVal;
+  const vv=targetId===null?'__abstain__':targetId;
+  S.voteData[voterId]=vv;
   const alive=S.players.filter(p=>p.alive);
   const cast=alive.filter(p=>S.voteData.hasOwnProperty(p.id)).length;
-  if(cast>=alive.length)hostResolveVote();
+  broadcast({type:'vote-update',voteData:S.voteData});
+  if(cast>=alive.length) hostResolveVote();
+  else render();
 }
 
 async function hostResolveVote(){
@@ -780,8 +1983,8 @@ async function hostResolveVote(){
   S.votedOut=elim||null;S.loading=true;render();
   const w=checkWin(S.players,elim);
   const t=await callGM(elim
-    ?`Mafia game. Day vote: ${elim.name} (${elim.role}) was eliminated. 2 dramatic atmospheric sentences.`
-    :`Mafia game. Day vote tied — no elimination. One tense sentence about the unresolved tension.`);
+    ?`Mafia town game. Day vote: the citizens eliminated ${elim.name}, who was ${elim.role}. Two dramatic sentences for a small-town newspaper.`
+    :`Mafia town game. The citizens' vote was tied — no one eliminated. One tense sentence about unresolved suspicion.`);
   S.narration=t;S.loading=false;
   if(w){await hostEndGame(w);return;}
   broadcast({type:'vote-result',eliminated:elim?{id:elim.id,name:elim.name,role:elim.role}:null,narration:t,players:S.players.map(p=>({id:p.id,name:p.name,alive:p.alive})),winner:null});
@@ -789,13 +1992,18 @@ async function hostResolveVote(){
 }
 
 async function hostEndGame(winner){
-  S.winner=winner;S.loading=true;S.phase='over';render();
-  const t=await callGM(`Mafia party game: ${winner} won. 2 dramatic climactic sentences as the final announcement.`);
+  S.winner=winner;S.loading=true;S.phase='over';
+  if(VOICE.stream)VOICE.setGlobalMute(false);
+  render();
+  const t=await callGM(`Mafia town game ended. ${winner} won. Two climactic sentences fitting for a town newspaper's final edition.`);
   S.narration=t;S.loading=false;
-  broadcast({type:'game-over',winner,narration:t,players:S.players});render();
+  broadcast({type:'game-over',winner,narration:t,players:S.players});
+  transition(()=>render());
 }
 
-// ─── HELPERS ──────────────────────────────────────────────────────────────────
+/* ══════════════════════════════════════════════
+   HELPERS
+   ══════════════════════════════════════════════ */
 function checkWin(ps,elim=null){
   if(elim?.role==='Jester')return'Jester';
   const aM=ps.filter(p=>p.alive&&p.role==='Mafia').length;
@@ -810,16 +2018,19 @@ async function callGM(prompt){
       headers:{'Content-Type':'application/json'},
       body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:200,messages:[{role:'user',content:prompt}]})});
     const d=await r.json();
-    if(d.content&&d.content[0]&&d.content[0].text)return d.content[0].text;
-    return'The village stirs in uneasy silence…';
-  }catch{return'The village stirs in uneasy silence…';}
+    if(d.content&&d.content[0]?.text)return d.content[0].text;
+    return 'The town waits in uneasy silence…';
+  }catch{return'The town waits in uneasy silence…';}
 }
+
 function esc(s){return String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
 function cap(s){return s.charAt(0).toUpperCase()+s.slice(1);}
 
-// ─── INIT ──────────────────────────────────────────────────────────────────────
-const urlRoom=new URLSearchParams(location.search).get('room');
-if(urlRoom){S.roomCode=urlRoom.toUpperCase();S.screen='name';}
+/* ══════════════════════════════════════════════
+   INIT
+   ══════════════════════════════════════════════ */
+const urlRoom = new URLSearchParams(location.search).get('room');
+if (urlRoom){ S.roomCode=urlRoom.toUpperCase(); S.screen='name'; }
 render();
 </script>
 </body>
